@@ -21,8 +21,10 @@ class PrimitiveFunction(SchemeValue):
         return "primitive procedure"
 
     def apply_step(self, args, evaluation):
-        "*** YOUR CODE HERE ***"
-        evaluation.set_value(FALSE)
+        try:
+            evaluation.set_expr(self.func(args))
+        except TypeError:
+            raise SchemeError("{0} received an incorrect number of arguments".format(repr(self)))
 
     def __repr__(self):
         return "PrimitiveFunction({0})".format(repr(self.func))
@@ -148,8 +150,9 @@ class Evaluation:
         that denote the remaining computation."""
         expr = self.expr
         if expr.symbolp():
-            "*** YOUR CODE HERE ***"
-            self.set_value(FALSE)
+            # Exception for failed lookup defined in EnvironFrame
+            value = self.env[expr]
+            self.set_value(value)
         elif expr.atomp():
             self.set_value(expr)
         elif not scm_listp(expr):
@@ -254,7 +257,12 @@ class Evaluation:
         if target.symbolp():
             self.check_form(3,3)
             value = self.expr.nth(2)
-            Symbol.string_to_symbol(value)
+            # if already defined, refer current def to previous def
+            try:
+                value = self.env[value]
+            except SchemeError:
+                pass
+            self.env.define(target,value)
             self.set_value(UNSPEC)
 
         elif not target.pairp():
@@ -337,8 +345,13 @@ class Evaluation:
     def do_call_form(self):
         self.check_form(1)
         op = self.full_eval(self.expr.car)
-        "*** YOUR CODE HERE ***"
-        op.apply_step([], self)
+        args = []
+        rest = self.expr.cdr
+        while rest is not NULL:
+            current_arg = rest.car
+            args.append(self.full_eval(current_arg))
+            rest = rest.cdr
+        op.apply_step(args, self)
 
     # Utility methods for checking the structure of Scheme values that
     # represent programs.
