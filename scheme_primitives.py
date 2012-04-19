@@ -469,7 +469,7 @@ def scm_mul(*vals):
     return _arith(mul, 1, vals)
 
 def scm_div(val0, val1):
-    _check_nums((val0, val1))
+    _check_nums(val0, val1)
     return Number(val0.num_val / val1.num_val)
 
 def scm_quo(val0, val1):
