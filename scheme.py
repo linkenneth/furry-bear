@@ -24,7 +24,7 @@ class PrimitiveFunction(SchemeValue):
         try:
             evaluation.set_expr(self.func(*args))
         except TypeError:
-            raise SchemeError("{0} received an incorrect number of arguments".format(repr(self)))
+            raise SchemeError("{0} received an incorrect number of arguments".format(repr(self.func)))
 
     def __repr__(self):
         return "PrimitiveFunction({0})".format(repr(self.func))
@@ -187,9 +187,20 @@ class Evaluation:
 
     def do_lambda_form(self):
         self.check_form(3)
+        formals = self.expr.cdr.car
         self.check_formals(self.expr.cdr.car)
-        "*** YOUR CODE HERE ***"
-        self.set_value(FALSE)
+
+        # One expression optimization
+        if self.expr.length() == 3:
+            fn = LambdaFunction(formals,self.expr.cdr.cdr.car,self.env)
+        # Using begin suite
+        else:
+            body = NULL
+            for i in range(self.expr.length()-1,1,-1):
+                body = Pair(self.expr.nth(i),body)
+            body = Pair(Symbol.string_to_symbol("begin"),body)
+            fn = LambdaFunction(formals,body,self.env)
+        self.set_value(fn)
 
     def do_if_form(self):
         self.check_form(4, 4)
@@ -346,8 +357,8 @@ class Evaluation:
         self.check_form(1)
         op = self.full_eval(self.expr.car)
         args = []
-        rest = self.expr.cdr
-        while rest is not NULL:
+        # Slightly optimized to not traverse the expression multiple times
+        while not rest.nullp():
             args.append(self.full_eval(rest.car))
             rest = rest.cdr
         op.apply_step(args, self)
