@@ -282,7 +282,7 @@ class Evaluation:
         # Defining functions
         else:
             self.check_formals(target.cdr)
-            "*** YOUR CODE HERE ***"
+            self.env.define(target.car,self.full_eval(Pair(Symbol.string_to_symbol("lambda"),Pair(target.cdr,Pair(self.expr.nth(2),NULL)))))
             self.set_value(UNSPEC)
 
     def do_begin_form(self):
@@ -357,6 +357,7 @@ class Evaluation:
         self.check_form(1)
         op = self.full_eval(self.expr.car)
         args = []
+        rest = self.expr.cdr
         # Slightly optimized to not traverse the expression multiple times
         while not rest.nullp():
             args.append(self.full_eval(rest.car))
