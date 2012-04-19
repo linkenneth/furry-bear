@@ -345,13 +345,7 @@ class Evaluation:
     def do_call_form(self):
         self.check_form(1)
         op = self.full_eval(self.expr.car)
-        args = []
-        rest = self.expr.cdr
-        while rest is not NULL:
-            current_arg = rest.car
-            args.append(self.full_eval(current_arg))
-            rest = rest.cdr
-        op.apply_step(args, self)
+        op.apply_step(self.expr.cdr, self)
 
     # Utility methods for checking the structure of Scheme values that
     # represent programs.
