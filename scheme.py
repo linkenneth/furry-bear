@@ -22,7 +22,7 @@ class PrimitiveFunction(SchemeValue):
 
     def apply_step(self, args, evaluation):
         try:
-            evaluation.set_expr(self.func(args))
+            evaluation.set_expr(self.func(*args))
         except TypeError:
             raise SchemeError("{0} received an incorrect number of arguments".format(repr(self)))
 
@@ -345,7 +345,12 @@ class Evaluation:
     def do_call_form(self):
         self.check_form(1)
         op = self.full_eval(self.expr.car)
-        op.apply_step(self.expr.cdr, self)
+        args = []
+        rest = self.expr.cdr
+        while rest is not NULL:
+            args.append(self.full_eval(rest.car))
+            rest = rest.cdr
+        op.apply_step(args, self)
 
     # Utility methods for checking the structure of Scheme values that
     # represent programs.
