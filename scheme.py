@@ -46,7 +46,7 @@ class LambdaFunction(SchemeValue):
         return "closure"
 
     def apply_step(self, args, evaluation):
-        evaluation.set_expr(Evaluation(self.body,self.env.make_call_frame(self.formals, args)).step_to_value())
+        evaluation.set_value(Evaluation(self.body,self.env.make_call_frame(self.formals, args)).step_to_value())
 
     def write(self, out):
         print("<(lambda ", file=out, end='')
@@ -105,29 +105,32 @@ class EnvironFrame:
         the number of preceding ("normal") formal symbols, and the last
         formal symbol is bound to a Scheme list containing the remaining
         values in VALS (which may be 0)."""
+        # FORMALS is a Scheme list, VALS is a Python list
 
         length = formals.length()
         
         # Error checking
-        if formals.nth(length-1) is NULL:
-            if length != vals.length():
-                raise SchemeError("mismatch in number of formals and values")
+        if scm_listp(formals):
+            if length != len(vals):
+                raise SchemeError("mismatch in expected number of arguments")
         else:
-            if length > vals.length():
-                raise SchemeError("mismatch in number of formals and values")
+            if length > len(vals):
+                raise SchemeError("mismatch in expected number of arguments")
 
         # Defining formals
         call_frame = EnvironFrame(self)
         i = 0
         while i < length:
             if i == length-1:
-                if formals.nth(i).symbolp():
-                    last = vals
-                    for _ in range(vals.length()-length):
-                        last = last.cdr
-                    call_frame.define(formals.nth(i),last)
+                if formals.symbolp():
+                    rest = NULL
+                    for k in vals[:i-1:-1]:
+                        rest = Pair(k,rest)
+                    call_frame.define(formals,rest)
                     break
-            call_frame.define(formals.nth(i),vals.nth(i))
+            call_frame.define(formals.car,vals[i])
+            i += 1
+            formals = formals.cdr
 
         return call_frame
 
@@ -421,6 +424,7 @@ class Evaluation:
                     raise SchemeError("malformed list or pair at parameter {0}".format(index))
             distinct.add(formal_list.car)
             formal_list = formal_list.cdr
+            index += 1
 
 def scm_eval(sexpr):
     # To begin with, this function simply returns SEXPR unchanged, without
