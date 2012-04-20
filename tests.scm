@@ -25,6 +25,51 @@
 )
 ; expect Error
 
+
+;;Testing for problem 1
+
+(car '(3 4))
+;expected 3
+
+(cdr '(3 4))
+;expected 4
+
+(car (car '((3 . 4) (5 . 6))))
+;expected 3
+
+(car (cdr '((3 . 4) (5 . 6))))
+;expected 5
+
+'(3 4 . 5)
+;expected (3 4 . 5)
+
+'(3 . 4 5)
+;expected Error
+
+'#t#f
+;expected #t#f
+
+'()
+;expected ()
+
+'(.)
+;expected Error
+
+'( . 4)
+;expected Error
+
+'(#t . #f)
+;expected Error
+
+'(#t #f #t #f)
+;expected (#t #f #t #f)
+
+;;Testing for problem 2
+
+
+
+
+
 ;; In the following sections, you should provide test cases, so that by 
 ;; running 
 ;;     python3 scheme_test.py tests.scm

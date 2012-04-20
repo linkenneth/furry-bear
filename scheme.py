@@ -518,7 +518,10 @@ def scm_read():
             return NULL
         elif syntax == ".":
             input_port.pop()
-            return scm_read()
+            temp = scm_read()
+            if input_port.pop()[0] != ")":
+                raise SchemeError("missing right parenthesis")
+            return temp
         return Pair(scm_read(), read_tail())
 
     if input_port.current is None:
