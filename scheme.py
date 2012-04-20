@@ -212,17 +212,17 @@ class Evaluation:
 
     def do_lambda_form(self):
         self.check_form(3)
-        formals = self.expr.cdr.car
+        formals = self.expr.cdr.car  # gets the arguments
         self.check_formals(self.expr.cdr.car)
 
         # One expression optimization
         if self.expr.length() == 3:
-            fn = LambdaFunction(formals,self.expr.cdr.cdr.car,self.env)
+            fn = LambdaFunction(formals,self.expr.cdr.cdr.car,self.env) # expr.cdr.cdr.car gets the body of the function
         # Using begin suite
         else:
             body = NULL
             for i in range(self.expr.length()-1,1,-1):
-                body = Pair(self.expr.nth(i),body)
+                body = Pair(self.expr.nth(i),body) #? what is the need?
             body = Pair(Symbol.string_to_symbol("begin"),body)
             fn = LambdaFunction(formals,body,self.env)
         self.set_value(fn)
