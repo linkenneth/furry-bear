@@ -470,10 +470,14 @@ def scm_mul(*vals):
 
 def scm_div(val0, val1):
     _check_nums(val0, val1)
+    if val1.num_val == 0:
+        raise SchemeError("attempt to divide by zero!")
     return Number(val0.num_val / val1.num_val)
 
 def scm_quo(val0, val1):
     _check_nums(val0, val1, pred = scm_integerp)
+    if val1.num_val == 0:
+        raise SchemeError("attempt to divide by zero!")
     if (val0.num_val < 0) == (val1.num_val < 0):
         return Number(val0.num_val // val1.num_val)
     else:
