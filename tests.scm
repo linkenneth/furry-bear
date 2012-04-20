@@ -46,12 +46,12 @@
 ; expect 3
 
 (cdr '(3 4))
-; expect 4
+; expect (4)
 
 (car (car '((3 . 4) (5 . 6))))
 ; expect 3
 
-(car (cdr '((3 . 4) (5 . 6))))
+(car (car (cdr '((3 . 4) (5 . 6)))))
 ; expect 5
 
 '(3 4 . 5)
@@ -70,19 +70,27 @@
 ; expect Error
 
 '(#t . #f)
-; expect Error
+; expect (#t . #f)
 
 '(#t #f #t #f)
 ; expect (#t #f #t #f)
 
+'a
+; expect a
 
-; Problem 2 (primitive function calls)
+'('b 3 2 'c 'a)
+; expect ('b 3 2 'c 'a)
+
+(3 2)
+; expect Error
+
+
+; Problem A2 and B2 (symbol evaluation and simple defines)
 
 ; YOUR TEST CASES HERE
 
 
-
-; Problem A3 and B3 (symbol evaluation and simple defines)
+; Problem 3 (primitive function calls)
 
 ; YOUR TEST CASES HERE
 
