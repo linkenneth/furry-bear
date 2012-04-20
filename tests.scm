@@ -78,6 +78,9 @@
 'a
 ; expect a
 
+'#t
+; expect #t
+
 '('b 3 2 'c 'a)
 ; expect ('b 3 2 'c 'a)
 
@@ -89,6 +92,38 @@
 
 ; YOUR TEST CASES HERE
 
+(define (add_one x) (+ x 1))
+(add_one 10)
+; expect 11
+
+(define (add_squares a b) (+ (* a a) (* b b)))
+(add_squares 6 8)
+; expect 100
+
+(add_squares 5)
+; expect Error
+
+(define function a (+ a 1))
+; expect Error
+
+(define a 2)
+a
+; expect 2
+
+(define (test1 x) (define y x) (+ x y))
+(test1 3)
+; expect 6
+
+(define (have_money? x) (define (helper x n)
+		    (cond ((= x 100) #t)
+			  ((= x 0) #f)
+			  (else (+ x n)))) (helper x 99))
+(have_money? 100)
+; expect #t
+
+(have_money? 1)
+; expect 100
+ 
 
 ; Problem 3 (primitive function calls)
 
