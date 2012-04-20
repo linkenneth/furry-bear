@@ -46,8 +46,7 @@ class LambdaFunction(SchemeValue):
         return "closure"
 
     def apply_step(self, args, evaluation):
-        "*** YOUR CODE HERE ***"
-        evaluation.set_expr(FALSE)
+        evaluation.set_expr(Evaluation(self.body,self.env.make_call_frame(self.formals, args)).step_to_value())
 
     def write(self, out):
         print("<(lambda ", file=out, end='')
@@ -106,8 +105,31 @@ class EnvironFrame:
         the number of preceding ("normal") formal symbols, and the last
         formal symbol is bound to a Scheme list containing the remaining
         values in VALS (which may be 0)."""
-        "*** YOUR CODE HERE ***"
-        return EnvironFrame(self)
+
+        length = formals.length()
+        
+        # Error checking
+        if formals.nth(length-1) is NULL:
+            if length != vals.length():
+                raise SchemeError("mismatch in number of formals and values")
+        else:
+            if length > vals.length():
+                raise SchemeError("mismatch in number of formals and values")
+
+        # Defining formals
+        call_frame = EnvironFrame(self)
+        i = 0
+        while i < length:
+            if i == length-1:
+                if formals.nth(i).symbolp():
+                    last = vals
+                    for _ in range(vals.length()-length):
+                        last = last.cdr
+                    call_frame.define(formals.nth(i),last)
+                    break
+            call_frame.define(formals.nth(i),vals.nth(i))
+
+        return call_frame
 
     def define(self, sym, val):
         """Define Scheme symbol SYM to have value VAL in SELF."""
@@ -387,8 +409,18 @@ class Evaluation:
         """Check that FORMAL_LIST is a valid parameter list having either 
         the form (sym1 sym2 ... symn) or else (sym1 sym2 ... symn . symrest),
         where each symx is a distinct symbol."""
-        "*** YOUR CODE HERE ***"
-        pass
+        index, length = 0, formal_list.length()-1
+        distinct = set()
+        while index < length:
+            if not formal_list.car.symbolp():
+                raise SchemeError("argument {0} is not a valid symbol".format(index))
+            elif formal_list.car in distinct:
+                raise SchemeError("formal parameters provided are not distinct")
+            elif not formal_list.cdr.pairp():
+                if index != length-1:
+                    raise SchemeError("malformed list or pair at parameter {0}".format(index))
+            distinct.add(formal_list.car)
+            formal_list = formal_list.cdr
 
 def scm_eval(sexpr):
     # To begin with, this function simply returns SEXPR unchanged, without
