@@ -446,7 +446,7 @@ def _check_nums(*vals, pred = scm_numberp):
     for i in range(len(vals)):
         if not vals[i].numberp():
             msg = "an integer" if pred is scm_integerp else "a number"
-            raise SchemeError("operand {0} is not {1}.".format(i, msg))
+            raise SchemeError("operand #{0} is not {1}.".format(i, msg))
 
 def _arith(op, init, vals):
     """Perform the OP operation on the integer values of VALS, with INIT as
