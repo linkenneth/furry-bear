@@ -181,25 +181,25 @@ a
 ; expect <(lambda (x) (begin (set! y x) (+ x y))), <Global frame at 0x848444c>>
 
 (lambda (x y) (/ x y))
-; expect <(lambda (x y) (begin (/ x y))), <Global frame at 0x848444c>>
+; expect <(lambda (x y)  (/ x y)), <Global frame at 0x848444c>>
 
 (lambda (x))
 ; Error
 
 (lambda (x) ())
-; expect <(lambda (x) (begin ())), <Global frame at 0x848444c>>
+; expect <(lambda (x)  ()), <Global frame at 0x848444c>>
 
 (lambda (x x) (+ x x))
-; expect <(lambda (x x) (begin (+ x x))), <Global frame at 0x848444c>>
+; expect <(lambda (x x)  (+ x x)), <Global frame at 0x848444c>>
 
 (lambda (0) (1))
-; expect <(lambda (0) (begin (1))), <Global frame at 0x848444c>>
+; expect <(lambda (0)  (1)), <Global frame at 0x848444c>>
 
 (lambda (anything) (something))
-; expect <(lambda (anything) (begin (something))), <Global frame at 0x848444c>>
+; expect <(lambda (anything)  (something)), <Global frame at 0x848444c>>
 
 ;; still not well implemented (lambda (x) (lambda (y) (+ y x)) x)
-; expect <(lambda (x) (begin (lambda (y) (+ y x)) x))), <Global frame at 0x848444c>>
+;; expect <(lambda (x)  (lambda (y) (+ y x)) x))), <Global frame at 0x848444c>>
 
 (define fun (lambda (x) (* x x)))
 (fun 10)
