@@ -26,50 +26,6 @@
 ; expect Error
 
 
-;;Testing for problem 1
-
-(car '(3 4))
-;expected 3
-
-(cdr '(3 4))
-;expected 4
-
-(car (car '((3 . 4) (5 . 6))))
-;expected 3
-
-(car (cdr '((3 . 4) (5 . 6))))
-;expected 5
-
-'(3 4 . 5)
-;expected (3 4 . 5)
-
-'(3 . 4 5)
-;expected Error
-
-'#t#f
-;expected #t#f
-
-'()
-;expected ()
-
-'(.)
-;expected Error
-
-'( . 4)
-;expected Error
-
-'(#t . #f)
-;expected Error
-
-'(#t #f #t #f)
-;expected (#t #f #t #f)
-
-;;Testing for problem 2
-
-
-
-
-
 ;; In the following sections, you should provide test cases, so that by 
 ;; running 
 ;;     python3 scheme_test.py tests.scm
@@ -86,7 +42,38 @@
 ;   it (and getting an error).  Therefore, you may later have to modify
 ;   x to (e.g.) 'x
 
-; YOUR TEST CASES HERE
+(car '(3 4))
+; expect 3
+
+(cdr '(3 4))
+; expect 4
+
+(car (car '((3 . 4) (5 . 6))))
+; expect 3
+
+(car (cdr '((3 . 4) (5 . 6))))
+; expect 5
+
+'(3 4 . 5)
+; expect (3 4 . 5)
+
+'(3 . 4 5)
+; expect Error
+
+'()
+; expect ()
+
+'(.)
+; expect Error
+
+'( . 4)
+; expect Error
+
+'(#t . #f)
+; expect Error
+
+'(#t #f #t #f)
+; expect (#t #f #t #f)
 
 
 ; Problem 2 (primitive function calls)
