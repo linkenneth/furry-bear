@@ -110,12 +110,10 @@ class EnvironFrame:
         length = formals.length()
         
         # Error checking
-        if scm_listp(formals):
-            if length != len(vals):
-                raise SchemeError("mismatch in expected number of arguments")
-        else:
-            if length > len(vals):
-                raise SchemeError("mismatch in expected number of arguments")
+        if len(vals) < length:
+            raise SchemeError("too few arguments provided")
+        if scm_listp(formals) and len(vals) > length:
+                raise SchemeError("too many arguments provided")
 
         # Defining formals
         call_frame = EnvironFrame(self)
@@ -212,12 +210,13 @@ class Evaluation:
 
     def do_lambda_form(self):
         self.check_form(3)
-        formals = self.expr.cdr.car  # gets the arguments
-        self.check_formals(self.expr.cdr.car)
+        formals = self.expr.nth(1)  # gets the arguments
+        self.check_formals(formals)
 
-        # One expression optimization
+        # Optimizations for single expressions
         if self.expr.length() == 3:
-            fn = LambdaFunction(formals,self.expr.cdr.cdr.car,self.env) # expr.cdr.cdr.car gets the body of the function
+            fn = LambdaFunction(formals,self.expr.nth(2),self.env)  # gets the body of the function
+
         # Using begin suite
         else:
             body = NULL
@@ -293,12 +292,7 @@ class Evaluation:
         if target.symbolp():
             self.check_form(3,3)
             value = self.expr.nth(2)
-            # if already defined, refer current def to previous def
-            try:
-                value = self.env[value]
-            except SchemeError:
-                pass
-            self.env.define(target,value)
+            self.env.define(target,self.full_eval(value))
             self.set_value(UNSPEC)
 
         elif not target.pairp():
