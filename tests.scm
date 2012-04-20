@@ -4,8 +4,21 @@
 ;;     python3 scheme_test.py tests.scm
 ;;
 
+;; In the following sections, you should provide test cases, so that by 
+;; running 
+;;     python3 scheme_test.py tests.scm
+;; you can test the portions of the project you've completed.  In fact, 
+;; you might consider writing these tests BEFORE tackling the associated
+;; problem!
 
-;; The following should work for the initial files.
+
+;; -- BEGIN TEST -- ;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; The following should work for the initial files. ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 3
 ; expect 3
@@ -26,14 +39,12 @@
 ; expect Error
 
 
-;; In the following sections, you should provide test cases, so that by 
-;; running 
-;;     python3 scheme_test.py tests.scm
-;; you can test the portions of the project you've completed.  In fact, 
-;; you might consider writing these tests BEFORE tackling the associated
-;; problem!
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-; Problem 1  (the reader)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Problem 1  (the reader) ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;   Initially, the project skeleton simply reads and prints the expressions
 ;   entered.  Later on, it starts evaluating them.  You may therefore need
 ;   to modify the tests you initially provide for this section when you get
@@ -88,7 +99,11 @@
 ; expect Error
 
 
-; Problem A2 and B2 (symbol evaluation and simple defines)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Problem A2 and B2 (symbol evaluation and simple defines) ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define (add_one x) (+ x 1))
 (add_one 10)
@@ -136,7 +151,12 @@ a
 (id 'samething)
 ; expect samething
 
-; Problem 3 (primitive function calls)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Problem 3 (primitive function calls) ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (+ (* 2 2) (/ 2 1))
 ; expect 6
@@ -145,13 +165,18 @@ a
 ; expect Error
 
 (/ 0 10 0)
-;expect Error
+; expect Error
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-; Problem A4, B4, A5, B5, and 6 (calls on user-defined functions)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Problem A4, B4, A5, B5, and 6 (calls on user-defined functions) ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;A4
+;; ----- A4 ----- ;;
+;; -------------- ;;
+
 (lambda (x) (set! y x) (+ x y))
 ; expect <(lambda (x) (begin (set! y x) (+ x y))), <Global frame at 0x848444c>>
 
@@ -171,7 +196,7 @@ a
 ; expect <(lambda (0) (begin (1))), <Global frame at 0x848444c>>
 
 (lambda (anything) (something))
-;expect <(lambda (anything) (begin (something))), <Global frame at 0x848444c>>
+; expect <(lambda (anything) (begin (something))), <Global frame at 0x848444c>>
 
 ;; still not well implemented (lambda (x) (lambda (y) (+ y x)) x)
 ; expect <(lambda (x) (begin (lambda (y) (+ y x)) x))), <Global frame at 0x848444c>>
@@ -184,37 +209,65 @@ a
 ; expect 1
 
 
-; Problem 7 (set!)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;
+;; Problem 7 (set!) ;;
+;;;;;;;;;;;;;;;;;;;;;;
 
 ; YOUR TEST CASES HERE
 
 
-; Problem A8 (if, and)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Problem A8 (if, and) ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; YOUR TEST CASES HERE
 
 
-; Problem B8 (cond, or)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Problem B8 (cond, or) ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; YOUR TEST CASES HERE
 
 
-; Problem 9 (let)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;
+;; Problem 9 (let) ;;
+;;;;;;;;;;;;;;;;;;;;;
 
 ; YOUR TEST CASES HERE
 
 
-; Extra Credit 1 (let*)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Extra Credit 1 (let*) ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; YOUR TEST CASES HERE
 
 
-; Extra Credit 2 (case)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Extra Credit 2 (case) ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; YOUR TEST CASES HERE
 
 
-; Problem A10
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;
+;; Problem A10 ;;
+;;;;;;;;;;;;;;;;;
 
 ;; The subsequence of list S for which F outputs a true value (i.e., one
 ;; other than #f), computed destructively
@@ -234,7 +287,11 @@ filtered_ints
 ; expect #t
 
 
-; Problem A11.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;
+;; Problem A11 ;;
+;;;;;;;;;;;;;;;;;
 
 ;; The number of ways to change TOTAL with DENOMS
 ;; At most MAX-COINS total coins can be used.
@@ -246,7 +303,12 @@ filtered_ints
 (count_change 20 us_coins 18)
 ; expect 8
 
-; Problem B10
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;
+;; Problem B10 ;;
+;;;;;;;;;;;;;;;;;
 
 ;; Reverse list L destructively, creating no new pairs.  May modify the 
 ;; cdrs of the items in list L.
@@ -262,7 +324,12 @@ LR
 (eq? L (list-tail LR 3))
 ; expect #t
 
-; Problem B11
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;
+;; Problem B11 ;;
+;;;;;;;;;;;;;;;;;
 
 ;; The number of ways to partition TOTAL, where 
 ;; each partition must be at most MAX_VALUE
@@ -274,7 +341,12 @@ LR
 ; expect 5
 ; Note: The 5 partitions are [[3 2] [3 1 1] [2 2 1] [2 1 1 1] [1 1 1 1 1]]
 
-; Problem 12
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;
+;; Problem 12 ;;
+;;;;;;;;;;;;;;;;
 
 ;; A list of all ways to partition TOTAL, where  each partition must 
 ;; be at most MAX_VALUE and there are at most MAX_PIECES partitions.
@@ -289,3 +361,4 @@ LR
 
 
 
+;; -- END TEST -- ;;
