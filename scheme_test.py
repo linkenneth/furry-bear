@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-"""Unit testing framework for the Logo interpreter.
-
+"""Unit testing framework for the Logo interpreter
+.
 Usage: python3 scheme_test.py FILE
 
 Interprets FILE as interactive Scheme source code, and compares each line
