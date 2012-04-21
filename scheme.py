@@ -22,7 +22,7 @@ class PrimitiveFunction(SchemeValue):
 
     def apply_step(self, args, evaluation):
         try:
-            evaluation.set_expr(self.func(*args))
+            evaluation.set_value(self.func(*args))
         except TypeError:
             raise SchemeError("{0} received an incorrect number of arguments".format(repr(self.func)))
 
@@ -46,7 +46,8 @@ class LambdaFunction(SchemeValue):
         return "closure"
 
     def apply_step(self, args, evaluation):
-        evaluation.set_value(Evaluation(self.body,self.env.make_call_frame(self.formals, args)).step_to_value())
+        #Is it set_expr or set_val?
+        evaluation.set_expr(Evaluation(self.body,self.env.make_call_frame(self.formals, args)).step_to_value())
 
     def write(self, out):
         print("<(lambda ", file=out, end='')
@@ -172,7 +173,6 @@ class Evaluation:
         remaining computation, leaving SELF with an expression and environment
         that denote the remaining computation."""
         expr = self.expr
-        print(expr)
         if expr.symbolp():
             # Exception for failed lookup defined in EnvironFrame
             value = self.env[expr]
