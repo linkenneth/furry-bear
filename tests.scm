@@ -123,6 +123,10 @@
 a
 ; expect 2
 
+(define b a)
+b
+; expect 2
+
 (define (test1 x) (define y x) (+ x y))
 (test1 3)
 ; expect 6
@@ -198,15 +202,35 @@ a
 (lambda (anything) (something))
 ; expect <(lambda (anything)  (something)), <Global frame at 0x848444c>>
 
-;; still not well implemented (lambda (x) (lambda (y) (+ y x)) x)
-;; expect <(lambda (x)  (lambda (y) (+ y x)) x))), <Global frame at 0x848444c>>
+(lambda (x) (lambda (y) (+ y x)) x)
+; expect <(lambda (x)  (begin((lambda (y) (+ y x)) x))), <Global frame at 0x848444c>>
 
-(define fun (lambda (x) (* x x)))
-(fun 10)
+(lambda (+ x 1))
+; expect Error
+
+;; ----- B4 ----- ;;
+;; -------------- ;;
+
+(define func (lambda (x) (* x x)))
+(func 10)
 ; expect 100
 
-((lambda x 1) 2)
+((lambda (x) 1) 2)
 ; expect 1
+
+(define func1 (lambda x (+ x 1)))
+(func1 2)
+; expect Error
+
+;;------- testing do_define_form --------;;
+(define (func (x y) z) (+ x 1))
+(func (1 2) 3)
+; expect Error
+
+(func 2 5)
+; expect 6
+
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -292,7 +292,16 @@ class Evaluation:
         if target.symbolp():
             self.check_form(3,3)
             value = self.expr.nth(2)
+<<<<<<< .merge_file_Q8QMxv
             self.env.define(target,self.full_eval(value))
+=======
+            # if already defined, refer current def to previous def
+            try:
+                value = self.env[value]
+            except SchemeError:
+                pass
+            self.env.define(target, value)
+>>>>>>> .merge_file_0EfhzV
             self.set_value(UNSPEC)
 
         elif not target.pairp():
@@ -301,7 +310,7 @@ class Evaluation:
         # Defining functions
         else:
             self.check_formals(target.cdr)
-            self.env.define(target.car,self.full_eval(Pair(Symbol.string_to_symbol("lambda"),Pair(target.cdr,Pair(self.expr.nth(2),NULL)))))
+            self.env.define(target.car, self.full_eval(Pair(Symbol.string_to_symbol("lambda"), Pair(target.cdr, Pair(self.expr.nth(2),NULL)))))
             self.set_value(UNSPEC)
 
     def do_begin_form(self):
@@ -486,10 +495,10 @@ def read_eval_print(prompt = None):
             if prompt is not None:
                 print(prompt, end = "")
             sys.stdout.flush()
-            expr = scm_read()
+            expr = scm_read()    #Get the expression as objects
             if expr is THE_EOF_OBJECT:
                 return
-            val = scm_eval(expr)
+            val = scm_eval(expr)   
             if prompt is not None and val is not UNSPEC:
                 scm_write(val)
                 scm_newline()
@@ -665,3 +674,4 @@ def run(*argv):
     input_port = Buffer(tokenize_lines(input_file))
     create_global_environment()
     read_eval_print("scm> ")
+
