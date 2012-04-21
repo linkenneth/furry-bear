@@ -46,7 +46,8 @@ class LambdaFunction(SchemeValue):
         return "closure"
 
     def apply_step(self, args, evaluation):
-        evaluation.set_value(Evaluation(self.body,self.env.make_call_frame(self.formals, args)).step_to_value())
+        #Is it set_expr or set_val?
+        evaluation.set_expr(Evaluation(self.body,self.env.make_call_frame(self.formals, args)).step_to_value())
 
     def write(self, out):
         print("<(lambda ", file=out, end='')
