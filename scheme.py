@@ -6,7 +6,7 @@ from ucb import main, trace
 from scheme_tokens import *
 from scheme_utils import *
 from scheme_primitives import *
-
+#test
 # Name of file containing Scheme definitions.
 SCHEME_PRELUDE_FILE = "scheme_prelude.scm"
 
@@ -486,7 +486,7 @@ def read_eval_print(prompt = None):
             if prompt is not None:
                 print(prompt, end = "")
             sys.stdout.flush()
-            expr = scm_read()    #Get the expression as objects
+            expr = scm_read()  # Get the expression as objects
             if expr is THE_EOF_OBJECT:
                 return
             val = scm_eval(expr)   
