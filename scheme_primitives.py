@@ -149,6 +149,7 @@ class Pair(S_Expr):
 
     def length(self):
         n = 0
+        print(self)
         while self.pairp():
             n += 1
             self = self.cdr

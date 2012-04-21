@@ -10,4 +10,4 @@ scheme_test.py
 scheme_tokens.py
 ucb.py
 scheme_utils.py
-scheme_prelude.scm
+\#*
