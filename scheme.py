@@ -292,16 +292,7 @@ class Evaluation:
         if target.symbolp():
             self.check_form(3,3)
             value = self.expr.nth(2)
-<<<<<<< .merge_file_Q8QMxv
             self.env.define(target,self.full_eval(value))
-=======
-            # if already defined, refer current def to previous def
-            try:
-                value = self.env[value]
-            except SchemeError:
-                pass
-            self.env.define(target, value)
->>>>>>> .merge_file_0EfhzV
             self.set_value(UNSPEC)
 
         elif not target.pairp():
