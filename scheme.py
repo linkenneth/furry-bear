@@ -219,11 +219,8 @@ class Evaluation:
 
         # Using begin suite
         else:
-            body = NULL
-            for i in range(self.expr.length()-1,1,-1):
-                body = Pair(self.expr.nth(i),body) #? what is the need?
-            body = Pair(Symbol.string_to_symbol("begin"),body)
-            fn = LambdaFunction(formals,body,self.env)
+            body = Pair(Symbol.string_to_symbol("begin"), self.cdr.cdr)
+            fn = LambdaFunction(formals, body, self.env)
         self.set_value(fn)
 
     def do_if_form(self):
