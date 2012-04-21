@@ -171,6 +171,18 @@ b
 (/ 0 10 0)
 ; expect Error
 
+(cdr '(3 4 5))
+; expect (4 5)
+
+(car '())
+; expect Error
+
+(quotient 2)
+; expect Error
+
+(quotient 2 4)
+; expect Error
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
