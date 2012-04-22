@@ -293,10 +293,14 @@ class Evaluation:
         self.check_form(3, 3)
         to_set = self.expr.nth(1)
         new_value = self.full_eval(self.expr.nth(2))
-        if to_set.symbolp():
-            if self.env.find(to_set):
-                self.env.define(to_set, new_value)
-                self.set_value(UNSPEC)
+
+        if not to_set.symbolp():
+            raise SchemeError("first argument is not a symbol!")
+
+        # Undefined symbol handled in find
+        e = self.env.find(to_set)
+        e.define(to_set, new_value)
+        self.set_value(UNSPEC)
 
     def do_define_form(self):
         self.check_form(3)
