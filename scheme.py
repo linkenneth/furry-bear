@@ -286,6 +286,8 @@ class Evaluation:
                     self.set_value(test)
                 elif clause.cdr.car is self._ARROW_SYM:
                     if clause.cdr.cdr.nullp():
+                        raise SchemeError("no function specified for 'cond'")
+                    self.set_expr(make_list(clause.nth(2),test))
                 else:
                     for i in range(1, clause.length()):  # Loops to evaluate possible returns first so it checks for possible SchemeErrors
                         self.full_eval(clause.nth(i))
