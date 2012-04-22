@@ -539,7 +539,7 @@ def scm_read():
             input_port.pop()
             # to recognize malformed pairs
             rest = read_tail()
-            if not rest.cdr.nullp():
+            if rest.nullp() or not rest.cdr.nullp():
                 raise SchemeError("malformed pair")
             else:
                 return rest.car
