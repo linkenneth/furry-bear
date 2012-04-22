@@ -234,7 +234,9 @@ b
 (func1 2)
 ; expect Error
 
-;;------- testing do_define_form --------;;
+;; ------ testing do_define_form ------- ;;
+;; ------------------------------------- ;;
+
 (define (func (x y) z) (+ x 1))
 (func (1 2) 3)
 ; expect Error
