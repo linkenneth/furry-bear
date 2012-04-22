@@ -646,11 +646,7 @@ def create_global_environment():
     the_global_environment = EnvironFrame(None)
     
     # Uncomment the following line after you finish with Problem 4.
-<<<<<<< .merge_file_aT52HV
     #scm_load(Symbol.string_to_symbol(SCHEME_PRELUDE_FILE))
-=======
-    # scm_load(Symbol.string_to_symbol(SCHEME_PRELUDE_FILE))
->>>>>>> .merge_file_1O7y4l
     define_primitives(the_global_environment, _PRIMITIVES)
 
 input_port = None
