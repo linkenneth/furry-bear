@@ -530,7 +530,10 @@ x
 (cond (100))
 ; expect 100
 
-(cond (
+(cond ((and #f Too) Many)
+      ((or #t Tests!) 'Done)
+      (else notgettinghere))
+; expect done
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -539,7 +542,35 @@ x
 ;; Problem 9 (let) ;;
 ;;;;;;;;;;;;;;;;;;;;;
 
-; YOUR TEST CASES HERE
+(define x 3) (define y 4) (define z 5) (define r 0)
+(let ((x y) (y z) (z r) (list x y z)))
+; expect (4 5 0)
+
+(let ((x (* y r)) (y z) (z (+ x 10))) (list (x y z)))
+; expect (0 5 13)
+
+(let ((x y z)) (list x y z)
+; expect Error
+
+(let () (list x y z))
+; expect (3 4 5)
+
+(let ((x)) (list x))
+; expect Error
+
+(let (x 100) x)
+; expect Error
+
+(let (x 0) ((+ x 1)))
+; expect Error
+
+(let ((x y) (y z) (z oops)) (list x y z))
+; expect Error
+
+(let () oops (list x y z))
+; expect Error
+
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -548,7 +579,11 @@ x
 ;; Extra Credit 1 (let*) ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-; YOUR TEST CASES HERE
+(define x 3) (define y 4) (define z 5) (define r 0)
+(let* ((x y) (y (* x r)) (z x)) (set! x 1000) (list x y z))
+; expect (1000 0 4)
+
+(let 
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

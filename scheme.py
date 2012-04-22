@@ -288,7 +288,7 @@ class Evaluation:
                 elif clause.cdr.car is self._ARROW_SYM:
                     if clause.cdr.cdr.nullp():
                         raise SchemeError("no function specified for 'cond'")
-                    self.set_expr(make_list(clause.nth(2),test))
+                    self.set_expr(make_list(clause.nth(2), test))
                 else:
                     expr_seq = clause.cdr
                     self.evaluate_expr_seq_and_set_expr_as_last(expr_seq)
@@ -340,13 +340,17 @@ class Evaluation:
         bindings = self.expr.cdr.car  # of form ((VAR1 INIT1)(VAR2 INIT2)...)
         exprs = self.expr.cdr.cdr  # of form (BODY1)(BODY2)...
         if not scm_listp(bindings):
-            raise SchemeError("bad bindings list in let form")
-
+            raise SchemeError("badly formed bindings")
+        
+        
         # Create new env frame and bindings
         symbols = NULL
         vals = []
         while bindings.pairp():
             binding = bindings.car
+            self.check_form(2, 2, expr = binding)  # Checks that all the bindings are in the form (binding symbol)
+            if not binding.pairp():
+                raise SchemeError("badly formed bindings, all bindings should be in a list")
             symbols = Pair(binding.car,symbols)
             vals.append(self.full_eval(binding.cdr.car))
             bindings = bindings.cdr
@@ -363,20 +367,18 @@ class Evaluation:
         self.check_form(3)
         bindings = self.expr.cdr.car  # of form ((VAR1 INIT1)(VAR2 INIT2)...)
         exprs = self.expr.cdr.cdr  # of form (BODY1)(BODY2)...
-        if not scm_listp(bindings):
+        if not scm_listp(bindings) or not scm_listp(bindings.car):
             raise SchemeError("bad bindings list in let form")
 
         # Create new EMPTY env frame
         let_frame = self.env.make_call_frame(NULL,[])
         while bindings.pairp():
             binding = bindings.car
+            self.check_form(2, 2, expr = binding)  # Checks that all bindings are in the form (symbol value)
+            if not binding.pairp():
+                raise SchemeError("badly formed bindings, all bindings should be in a list")
             let_frame.define(binding.car,self.full_eval(binding.cdr.car, let_frame))
             bindings = bindings.cdr
-
-        if len(vals) < len(symbols):
-            raise SchemeError("too many arguments provided")
-        elif len(vals) > len(symbols):
-            raise SchemeError("too few arguments provided")
 
         # Evaluating the body in new frame
         for _ in range(0, exprs.length()-1):
@@ -385,30 +387,6 @@ class Evaluation:
         self.set_expr(exprs.car, let_frame)
 
     def do_case_form(self):
-        self.check_form(1)
-        num_clauses = self.expr.length() - 2
-        case = self.full_eval(self.expr.nth(1))
-        for i in range(2, num_clauses + 1):
-            clause = self.expr.nth(i)
-            self.check_form(1, expr = clause)
-            if clause.car is self._ELSE_SYM and i == num_clauses:
-                test = True
-                if clause.cdr.nullp():
-                    raise SchemeError("badly formed else clause")
-            else:
-                test = self.full_eval(clause.car)
-            if test:
-                if clause.length() == 1:
-                    self.set_value(test)
-                elif clause.cdr.car is self._ARROW_SYM:
-                    if clause.cdr.cdr.nullp():
-                        raise SchemeError("no function specified for 'cond'")
-                    self.set_expr(make_list(clause.nth(2),test))
-                else:
-                    for i in range(1, clause.length()):  # Loops to evaluate possible returns first so it checks for possible SchemeErrors
-                        self.full_eval(clause.nth(i))
-                    self.set_expr(clause.nth(clause.length()-1))  # Returns the last of the options
-                return
         self.check_form(2)
         k = self.full_eval(self.expr.nth(1))
         clauses = self.expr.cdr.cdr
@@ -435,24 +413,6 @@ class Evaluation:
             clauses = clauses.cdr
         self.set_value(UNSPEC)
 
-
-
-
-        self.check_form(2)
-        item = self.set_expr(self.expr.nth(1))
-        groups = self.expr.cdr.cdr
-        while not groups.nullp():
-            items, names = groups.car
-            while not items.nullp():
-                i = items.car
-                if item == i:
-                    for elem in names:
-                        self.expr.full_eval(elem)
-                    self.set_expr(names.nth(names.lenth()-1))
-                items = items.cdr
-            groups = groups.cdr
-        
-        
 
     # Symbols that are used in special forms.
 
