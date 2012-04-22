@@ -134,9 +134,7 @@ class EnvironFrame:
             formals = formals.cdr
             i += 1
         if formals.symbolp():
-            rest = NULL
-            for k in vals[:i-1:-1]:
-                rest = Pair(k,rest)
+            rest = make_list(*vals[i:])
             call_frame.define(formals,rest)
 
         return call_frame
@@ -564,7 +562,7 @@ def scm_read():
     elif syntax == SYMBOL:
         return Symbol.string_to_symbol(val)
     elif syntax == "'":
-        return Pair(Evaluation._QUOTE_SYM, Pair(scm_read(), NULL))
+        return make_list(Evaluation._QUOTE_SYM, scm_read())
     elif syntax == "(":
         return read_tail()
     else:

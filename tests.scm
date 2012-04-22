@@ -333,6 +333,19 @@ variable-arguments
 (f 3 5)
 ; expect 10
 
+(define (g x y . z)
+  (display x)
+  (newline)
+  (display z)
+  (newline))
+(g 3 2 1 0 8)
+; expect 3
+; expect (1 0 8)
+
+(g '(2 3) 3 '(3 . 2))
+; expect (2 3)
+; expect ((3 . 2))
+
 (f 3 5 8 6 9)
 ; expect 10
 
