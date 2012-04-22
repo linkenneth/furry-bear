@@ -271,17 +271,16 @@ class Evaluation:
 
     def do_cond_form(self):
         self.check_form(1)
-        num_clauses = self.expr.length()
-        for i in range(1, num_clauses):
+        num_clauses = self.expr.length() - 1
+        for i in range(1, num_clauses + 1):
             clause = self.expr.nth(i)
-            print(clause)
             self.check_form(1, expr = clause)
             if clause.car is self._ELSE_SYM and i == num_clauses:
-                test = TRUE
+                test = True
                 if clause.cdr.nullp():
                     raise SchemeError("badly formed else clause")
             else:
-                test = self.set_expr(clause.car)
+                test = self.full_eval(clause.car)
             if test:
                 if clause.length() == 1:
                     self.set_value(test)
@@ -291,7 +290,7 @@ class Evaluation:
                     else:
                         self.set_expr(clause.nth(2))
                 else:
-                    for i in range(1, clause.length() - 1):  # Loops to evaluate possible returns first so it checks for possible SchemeErrors
+                    for i in range(1, clause.length()):  # Loops to evaluate possible returns first so it checks for possible SchemeErrors
                         self.full_eval(clause.nth(i))
                     self.set_expr(clause.nth(clause.length()-1)) #  Returns the last of the options
                 return
