@@ -342,9 +342,9 @@ class Evaluation:
         while bindings.pairp():
             binding = bindings.car
             symbols = Pair(binding.car,symbols)
-            vals = [binding.cdr.car] + vals
+            vals.append(binding.cdr.car)
             bindings = bindings.cdr
-        let_frame = self.env.make_call_frame(symbols, vals)
+        let_frame = self.env.make_call_frame(symbols, list(reversed(vals)))
         for _ in range(0, exprs.length()-1):
             self.full_eval(exprs.car, let_frame)
             exprs = exprs.cdr
