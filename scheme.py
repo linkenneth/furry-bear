@@ -337,14 +337,18 @@ class Evaluation:
         exprs = self.expr.cdr.cdr  # of form (BODY1)(BODY2)...
         if not scm_listp(bindings):
             raise SchemeError("bad bindings list in let form")
+
+        # Create new env frame and bindings
         symbols = NULL
         vals = []
         while bindings.pairp():
             binding = bindings.car
             symbols = Pair(binding.car,symbols)
-            vals.append(binding.cdr.car)
+            vals.append(self.full_eval(binding.cdr.car))
             bindings = bindings.cdr
         let_frame = self.env.make_call_frame(symbols, list(reversed(vals)))
+
+        # Evaluating the body in new frame
         for _ in range(0, exprs.length()-1):
             self.full_eval(exprs.car, let_frame)
             exprs = exprs.cdr
@@ -353,12 +357,32 @@ class Evaluation:
     # Extra credit
     def do_let_star_form(self):
         self.check_form(3)
-        "*** YOUR CODE HERE ***"
-        self.set_value(UNSPEC)
+        bindings = self.expr.cdr.car  # of form ((VAR1 INIT1)(VAR2 INIT2)...)
+        exprs = self.expr.cdr.cdr  # of form (BODY1)(BODY2)...
+        if not scm_listp(bindings):
+            raise SchemeError("bad bindings list in let form")
+
+        # Create new EMPTY env frame
+        let_frame = self.env.make_call_frame(NULL,[])
+        while bindings.pairp():
+            binding = bindings.car
+            let_frame.define(binding.car,self.full_eval(binding.cdr.car, let_frame))
+            bindings = bindings.cdr
+
+        if len(vals) < len(symbols):
+            raise SchemeError("too many arguments provided")
+        elif len(vals) > len(symbols):
+            raise SchemeError("too few arguments provided")
+
+        # Evaluating the body in new frame
+        for _ in range(0, exprs.length()-1):
+            self.full_eval(exprs.car, let_frame)
+            exprs = exprs.cdr
+        self.set_expr(exprs.car, let_frame)
 
     def do_case_form(self):
         self.check_form(2)
-        "*** YOUR CODE HERE ***"
+
         self.set_value(UNSPEC)
 
     # Symbols that are used in special forms.
