@@ -274,9 +274,9 @@ class Evaluation:
                 if clause.cdr.nullp():
                     raise SchemeError("badly formed else clause")
             else:
-                "*** YOUR CODE HERE ***"
-                test = FALSE
+                test = self.full_eval(clause.car)
             if test:
+                #stopped here
                 if clause.length() == 1:
                     self.set_value(test)
                 elif clause.cdr.car is self._ARROW_SYM:
