@@ -300,7 +300,7 @@ class Evaluation:
         # Defining functions
         else:
             self.check_formals(target.cdr)
-            self.env.define(target.car, self.full_eval(Pair(Symbol.string_to_symbol("lambda"), Pair(target.cdr, Pair(self.expr.cdr.cdr, NULL))))
+            self.env.define(target.car, self.full_eval(Pair(Symbol.string_to_symbol("lambda"), Pair(target.cdr, Pair(self.expr.cdr.cdr, NULL)))))
             self.set_value(UNSPEC)
 
     def do_begin_form(self):
