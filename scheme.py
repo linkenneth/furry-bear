@@ -381,6 +381,35 @@ class Evaluation:
         self.set_expr(exprs.car, let_frame)
 
     def do_case_form(self):
+        self.check_form(1)
+        num_clauses = self.expr.length() - 2
+        case = self.full_eval(self.expr.nth(1))
+        for i in range(2, num_clauses + 1):
+            clause = self.expr.nth(i)
+            self.check_form(1, expr = clause)
+            if clause.car is self._ELSE_SYM and i == num_clauses:
+                test = True
+                if clause.cdr.nullp():
+                    raise SchemeError("badly formed else clause")
+            else:
+                test = self.full_eval(clause.car)
+            if test:
+                if clause.length() == 1:
+                    self.set_value(test)
+                elif clause.cdr.car is self._ARROW_SYM:
+                    if clause.cdr.cdr.nullp():
+                        raise SchemeError("no function specified for 'cond'")
+                    self.set_expr(make_list(clause.nth(2),test))
+                else:
+                    for i in range(1, clause.length()):  # Loops to evaluate possible returns first so it checks for possible SchemeErrors
+                        self.full_eval(clause.nth(i))
+                    self.set_expr(clause.nth(clause.length()-1))  # Returns the last of the options
+                return
+        self.set_value(UNSPEC)
+
+
+
+
         self.check_form(2)
         item = self.set_expr(self.expr.nth(1))
         groups = self.expr.cdr.cdr
