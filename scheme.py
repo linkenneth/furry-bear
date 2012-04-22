@@ -268,16 +268,20 @@ class Evaluation:
 
     def do_cond_form(self):
         self.check_form(1)
-        num_clauses = self.expr.length() - 1
-        for i in range(1, num_clauses + 1):
-            clause = self.expr.nth(i)
+        clauses = self.expr.cdr
+        while clauses.pairp():
+            clause = clauses.car
             self.check_form(1, expr = clause)
-            if clause.car is self._ELSE_SYM and i == num_clauses:
+
+            # Determining truthfulness of test expression
+            if clause.car is self._ELSE_SYM:
                 test = True
-                if clause.cdr.nullp():
+                if clause.cdr.nullp() or not clauses.cdr.nullp():
                     raise SchemeError("badly formed else clause")
             else:
                 test = self.full_eval(clause.car)
+
+            # if true, evaluate expression sequence
             if test:
                 if clause.length() == 1:
                     self.set_value(test)
@@ -286,10 +290,10 @@ class Evaluation:
                         raise SchemeError("no function specified for 'cond'")
                     self.set_expr(make_list(clause.nth(2),test))
                 else:
-                    for i in range(1, clause.length()):  # Loops to evaluate possible returns first so it checks for possible SchemeErrors
-                        self.full_eval(clause.nth(i))
-                    self.set_expr(clause.nth(clause.length()-1))  # Returns the last of the options
+                    expr_seq = clause.cdr
+                    self.evaluate_expr_seq_and_set_expr_as_last(expr_seq)
                 return
+            clauses = clauses.cdr
         self.set_value(UNSPEC)
 
     def do_set_bang_form(self):
@@ -405,6 +409,30 @@ class Evaluation:
                         self.full_eval(clause.nth(i))
                     self.set_expr(clause.nth(clause.length()-1))  # Returns the last of the options
                 return
+        self.check_form(2)
+        k = self.full_eval(self.expr.nth(1))
+        clauses = self.expr.cdr.cdr
+
+        while clauses.pairp():
+            clause = clauses.car
+            data = clause.car
+            expr_seq = clause.cdr.car
+
+            # if an else clause
+            if data is self._ELSE_SYM:
+                if clause.cdr.nullp() or not clauses.cdr.nullp():
+                    raise SchemeError("badly formed else clause")
+                self.evaluate_expr_seq_and_set_expr_as_last(expr_seq)
+                return
+
+            # otherwise check each datum
+            while data.pairp():
+                datum = data.car
+                if k.eqvp(datum):
+                    self.evaluate_expr_seq_and_set_expr_as_last(expr_seq)
+                    return
+                data = data.cdr
+            clauses = clauses.cdr
         self.set_value(UNSPEC)
 
 
@@ -513,6 +541,20 @@ class Evaluation:
             else:
                 distinct.add(item_to_check)
                 formal_list = formal_list.cdr
+
+    def evaluate_expr_seq_and_set_expr_as_last(self, expr_seq):
+        """Utility method for do_cond_form and do_case_form. Evaluates
+        all of the expressions within expr_seq, then sets the
+        expression of the evaluation as the last of these expressions."""
+        # Loops to evaluate possible returns first so it
+        # checks for possible SchemeErrors
+        expr = UNSPEC
+        while expr_seq.pairp():
+            expr = expr_seq.car
+            self.full_eval(expr)
+            expr_seq = expr_seq.cdr
+        # Returns the last of the options
+        self.set_expr(expr)
 
 def scm_eval(sexpr):
     # To begin with, this function simply returns SEXPR unchanged, without
