@@ -501,11 +501,11 @@ x
 
 (have_money? 1)
 ; expect 100
-
+3
 (have_money?)
 ; expect Error
 
-(cond ((if #t 10 3) => odd?)
+(cond ((if #t 10 3) => (lambda (x) (if (= x 10) #f #t)))
       (else 100))
 ; expect #f
 
@@ -535,6 +535,11 @@ x
       (else notgettinghere))
 ; expect done
 
+(cond (#f 10)
+      (else => (lambda (x) x)))
+; expect #f
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -551,6 +556,9 @@ x
 
 (let ((x y z)) (list x y z)
 ; expect Error
+
+(let ((x 10) (y (+ x y)) (z z)) (list x y z))
+; expect (10 7 5)
 
 (let () (list x y z))
 ; expect (3 4 5)
@@ -571,8 +579,6 @@ x
 ; expect Error
 
 
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -583,7 +589,35 @@ x
 (let* ((x y) (y (* x r)) (z x)) (set! x 1000) (list x y z))
 ; expect (1000 0 4)
 
-(let 
+(let* ((x y) (y z) (z r) (list x y z)))
+; expect (4 5 0)
+
+(let* ((x (* y r)) (y z) (z (+ x 10))) (list (x y z)))
+; expect (0 5 10)
+
+(let* ((x y z)) (list x y z)
+; expect Error
+
+(let* ((x 10) (y (+ x y)) (z z)) (list x y z))
+; expect (10 14 5)
+
+(let* () (list x y z))
+; expect (3 4 5)
+
+(let* ((x)) (list x))
+; expect Error
+
+(let* (x 100) x)
+; expect Error
+
+(let* (x 0) ((+ x 1)))
+; expect Error
+
+(let* ((x y) (y z) (z oops)) (list x y z))
+; expect Error
+
+(let* () oops (list x y z))
+; expect Error
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
