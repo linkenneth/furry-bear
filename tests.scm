@@ -505,6 +505,33 @@ x
 (have_money?)
 ; expect Error
 
+(cond ((if #t 10 3) => odd?)
+      (else 100))
+; expect #f
+
+(cond ((if #t #f what?) => some)
+      (else 'testpassed)
+; expect testpassed
+
+(cond (else 20 30 405000 0))
+; expect 0
+
+(cond ((= 2 3) 10 100 huh?)
+      (else 1 20 oops)
+; expect Error
+
+(cond ((= 2 3) 10 25)
+      ((< 10 2) 100 50)
+; expect
+
+(cond (#t))
+; expect #t
+
+(cond (100))
+; expect 100
+
+(cond (
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
