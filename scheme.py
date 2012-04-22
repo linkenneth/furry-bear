@@ -46,7 +46,7 @@ class LambdaFunction(SchemeValue):
         return "closure"
 
     def apply_step(self, args, evaluation):
-        #Is it set_expr or set_val?
+        # Is it set_expr or set_val?
         evaluation.set_expr(Evaluation(self.body,self.env.make_call_frame(self.formals, args)).step_to_value())
 
     def write(self, out):
@@ -300,7 +300,10 @@ class Evaluation:
         # Defining functions
         else:
             self.check_formals(target.cdr)
-            self.env.define(target.car, self.full_eval(Pair(Symbol.string_to_symbol("lambda"), Pair(target.cdr, Pair(self.expr.cdr.cdr, NULL)))))
+            # if one expression
+            self.env.define(target.car, self.full_eval(LambdaFunction(target.cdr,self.expr.nth(2), self.env)))
+            # if multiple expressions - use begin suite
+            self.env.define(target.car, self.full_eval(LambdaFunction(target.cdr, Pair(Symbol.string_to_symbol("begin"),self.expr.cdr.cdr), self.env)))
             self.set_value(UNSPEC)
 
     def do_begin_form(self):
