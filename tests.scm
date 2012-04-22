@@ -81,11 +81,20 @@
 '( . 4)
 ; expect 4
 
+'(2 968 52 58 -12 . 2 . 23 2 . 23)
+; expect Error
+
+'(2 3 . 2 3)
+; expect Error
+
 '(#t . #f)
 ; expect (#t . #f)
 
 '(#t #f #t #f)
 ; expect (#t #f #t #f)
+
+'(#t . #f . 'a)
+; expect Error
 
 'a
 ; expect a
@@ -139,6 +148,10 @@ $
 %*%@
 ; expect 42
 
+(define foo 'bar)
+foo
+; expect bar
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -147,7 +160,7 @@ $
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (+ (* 2 2) (/ 2 1))
-; expect 6
+; expect 6.0
 
 ;; Custom zero-division error
 (/ 1 0)
@@ -183,6 +196,15 @@ $
 (symbol? 'a)
 ; expect #t
 
+(integer? 3)
+; expect #t
+
+(integer? 3.05)
+; expect #f
+
+(> 3 2)
+; expect #t
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -197,34 +219,70 @@ $
 ; expect <(lambda (x) (begin (set! y x) (+ x y))), <Global frame at 0x848444c>>
 
 (lambda (x y) (/ x y))
-; expect <(lambda (x y)  (/ x y)), <Global frame at 0x848444c>>
+; expect <(lambda (x y) (/ x y)), <Global frame at 0x848444c>>
 
 (lambda (x))
-; Error
+; expect Error
 
 (lambda (x) ())
-; expect <(lambda (x)  ()), <Global frame at 0x848444c>>
-
-(lambda (x x) (+ x x))
-; expect <(lambda (x x)  (+ x x)), <Global frame at 0x848444c>>
+; expect <(lambda (x) ()), <Global frame at 0x848444c>>
 
 (lambda (0) (1))
-; expect <(lambda (0)  (1)), <Global frame at 0x848444c>>
+; expect Error
 
 (lambda (anything) (something))
-; expect <(lambda (anything)  (something)), <Global frame at 0x848444c>>
+; expect <(lambda (anything) (something)), <Global frame at 0x848444c>>
 
 (lambda (x) (lambda (y) (+ y x)) x)
-; expect <(lambda (x)  (begin((lambda (y) (+ y x)) x))), <Global frame at 0x848444c>>
+; expect <(lambda (x) (begin (lambda (y) (+ y x)) x)), <Global frame at 0x848444c>>
 
 (lambda (+ x 1))
 ; expect Error
+
+;; Our interpreter does not allow confusing non-distinct formal paramters
+(lambda (x x) (+ x 3))
+; expect Error
+
+(lambda (x . T) (+ x T))
+; expect <(lambda (x . t) (+ x t)), <Global frame at 0x848444c>>
 
 ;; ----- B4 ----- ;;
 ;; -------------- ;;
 
 (define function a (+ a 1))
 ; expect Error
+
+(define (func (x y) z) (+ x 1))
+; expect Error
+
+(define func (lambda (x) ()))
+func
+; expect <(lambda (x) ()), <Global frame at 0x848444c>>
+
+(define fun2
+  (lambda (x)
+    (lambda (y)
+      (+ y x))
+    x))
+fun2
+; expect <(lambda (x) (begin (lambda (y) (+ y x)) x)), <Global frame at 0x848444c>>
+
+(define (func x) ())
+func
+; expect <(lambda (x) ()), <Global frame at 0x848444c>>
+
+(define (hello person) (display person) (newline))
+hello
+; expect <(lambda (person) (begin (display person) (newline))), <Global frame at 0x848444c>>
+
+(define (variable-arguments x . T)
+  (display x)
+  (newline)
+  (display T)
+  (newline))
+variable-arguments
+; expect <(lambda (x . t) (begin (display x) (newline) (display t) (newline))), <Global frame at 0x848444c>>
+
 
 ;; ----- A5/B5/6 ----- ;;
 ;; ------------------- ;;
@@ -239,26 +297,14 @@ $
 (test2 100)
 ; expect Error
 
-(define (have_money? x)
-  (define (helper x n)
-    (cond ((= x 100) #t)
-	  ((= x 0) #f)
-	  (else (+ x n))))
-  (helper x 99))
-(have_money? 100)
-; expect #t
-
-(have_money? 1)
-; expect 100
-
-(have_money?)
-; expect Error
-
 (define (test1 x)
   (define y x)
   (+ x y))
 (test1 3)
 ; expect 6
+
+(test1 -99)
+; expect -198
 
 (define func (lambda (x) (* x x)))
 (func 10)
@@ -282,16 +328,22 @@ $
 (add_squares 5)
 ; expect Error
 
-(define (func (x y) z) (+ x 1))
-(func (1 2) 3)
-; expect Error
+(define (f x . T)
+  (begin (+ x 3) (* (car T) 2)))
+(f 3 5)
+; expect 10
 
-(func 2 5)
-; expect 6
+(f 3 5 8 6 9)
+; expect 10
 
-(define (id x) x)
-(id 'samething)
-; expect samething
+(define (concatenationnn a b c)
+  (begin
+    (display a)
+    (display b)
+    (display c)))
+(concatenationnn 1 2 'b)
+; expect 12b
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -332,13 +384,27 @@ $
 (if #f (+ 12 10) (/ 3 0))
 ; expect Error
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Problem B8 (cond, or) ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-; YOUR TEST CASES HERE
+(define (have_money? x)
+  (define (helper x n)
+    (cond ((= x 100) #t)
+	  ((= x 0) #f)
+	  (else (+ x n))))
+  (helper x 99))
+(have_money? 100)
+; expect #t
+
+(have_money? 1)
+; expect 100
+
+(have_money?)
+; expect Error
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
