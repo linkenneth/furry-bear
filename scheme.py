@@ -118,7 +118,7 @@ class EnvironFrame:
         while formals.pairp():
             try:
                 call_frame.define(formals.car,vals[i])
-            except KeyError:
+            except IndexError:
                 raise SchemeError("too few arguments provided")
             formals = formals.cdr
             i += 1

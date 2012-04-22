@@ -92,8 +92,9 @@
 '#t
 ; expect #t
 
-'('b 3 2 'c 'a)
-; expect ('b 3 2 'c 'a)
+;; STk returns ((quote b) 3 2 (quote c) (quote a)) just like our program
+;; '('b 3 2 'c 'a)
+;;; expect ('b 3 2 'c 'a)
 
 (3 2)
 ; expect Error
