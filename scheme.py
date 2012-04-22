@@ -382,8 +382,20 @@ class Evaluation:
 
     def do_case_form(self):
         self.check_form(2)
-
-        self.set_value(UNSPEC)
+        item = self.set_expr(self.expr.nth(1))
+        groups = self.expr.cdr.cdr
+        while not groups.nullp():
+            items, names = groups.car
+            while not items.nullp():
+                i = items.car
+                if item == i:
+                    for elem in names:
+                        self.expr.full_eval(elem)
+                    self.set_expr(names.nth(names.lenth()-1))
+                items = items.cdr
+            groups = groups.cdr
+        
+        
 
     # Symbols that are used in special forms.
 
