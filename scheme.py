@@ -291,14 +291,7 @@ class Evaluation:
                     self.set_expr(make_list(clause.nth(2),test))
                 else:
                     expr_seq = clause.cdr
-                    # Loops to evaluate possible returns first so it
-                    # checks for possible SchemeErrors
-                    while expr_seq.pairp():
-                        expr = expr_seq.car
-                        self.full_eval(expr)
-                        expr_seq = expr_seq.cdr
-                    # Returns the last of the options
-                    self.set_expr(expr)
+                    self.evaluate_expr_seq_and_set_expr_as_last(expr_seq)
                 return
             clauses = clauses.cdr
         self.set_value(UNSPEC)
@@ -405,19 +398,14 @@ class Evaluation:
             if data is self._ELSE_SYM:
                 if clause.cdr.nullp() or not clauses.cdr.nullp():
                     raise SchemeError("badly formed else clause")
-                while expr_seq.pairp():
-                    expr = expr_seq.car
-                    self.full_eval(expr)
-                    expr_seq = expr_seq.cdr
-                self.set_expr(expr_seq)
+                self.evaluate_expr_seq_and_set_expr_as_last(expr_seq)
+                return
+
+            # otherwise check each datum
             while data.pairp():
                 datum = data.car
                 if k.eqvp(datum):
-                    while expr_seq.pairp():
-                        expr = expr_seq.car
-                        self.full_eval(expr)
-                        expr_seq = expr_seq.cdr
-                    self.set_expr(expr_seq)
+                    self.evaluate_expr_seq_and_set_expr_as_last(expr_seq)
                     return
                 data = data.cdr
             clauses = clauses.cdr
@@ -510,6 +498,20 @@ class Evaluation:
             else:
                 distinct.add(item_to_check)
                 formal_list = formal_list.cdr
+
+    def evaluate_expr_seq_and_set_expr_as_last(self, expr_seq):
+        """Utility method for do_cond_form and do_case_form. Evaluates
+        all of the expressions within expr_seq, then sets the
+        expression of the evaluation as the last of these expressions."""
+        # Loops to evaluate possible returns first so it
+        # checks for possible SchemeErrors
+        expr = UNSPEC
+        while expr_seq.pairp():
+            expr = expr_seq.car
+            self.full_eval(expr)
+            expr_seq = expr_seq.cdr
+        # Returns the last of the options
+        self.set_expr(expr)
 
 def scm_eval(sexpr):
     # To begin with, this function simply returns SEXPR unchanged, without
