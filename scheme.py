@@ -223,11 +223,11 @@ class Evaluation:
 
     def do_if_form(self):
         self.check_form(3, 4)
-        cond = self.full_eval(self.expr.cdr.car)
+        cond = self.full_eval(self.expr.nth(1))
         if cond:
             ans = self.full_eval(self.expr.nth(2))
         else:
-            if self.expr.length == 3:
+            if self.expr.length() == 3:
                 ans = UNSPEC
             else:
                 ans = self.full_eval(self.expr.nth(3))
