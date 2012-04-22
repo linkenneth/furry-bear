@@ -221,6 +221,9 @@ class Evaluation:
             fn = LambdaFunction(formals, body, self.env)
         self.set_value(fn)
 
+    # To handle tail-recursion for conditionals, make sure the final
+    # result of the conditional uses set_expr as opposed to set_value
+
     def do_if_form(self):
         self.check_form(3, 4)
         cond = self.full_eval(self.expr.nth(1))
@@ -231,7 +234,7 @@ class Evaluation:
                 ans = UNSPEC
             else:
                 ans = self.full_eval(self.expr.nth(3))
-        self.set_value(ans)
+        self.set_expr(ans)
 
     def do_and_form(self):
         self.check_form(1)
@@ -343,7 +346,6 @@ class Evaluation:
             raise SchemeError("bad bindings list in let form")
         symbols = NULL
         vals = []
-        "*** YOUR CODE HERE ***"
         let_frame = self.env.make_call_frame(symbols, vals)
         for i in range(0, exprs.length()-1):
             self.full_eval(exprs.car, let_frame)
