@@ -275,9 +275,11 @@ class Evaluation:
 
             # Determining truthfulness of test expression
             if clause.car is self._ELSE_SYM:
+                try:
+                    self.check_form(2, expr = clause)
+                except SchemeError:
+                    raise SchemeError("else form badly formed")
                 test = True
-                if clause.cdr.nullp() or not clauses.cdr.nullp():
-                    raise SchemeError("badly formed else clause")
             else:
                 test = self.full_eval(clause.car)
 
@@ -348,8 +350,9 @@ class Evaluation:
         vals = []
         while bindings.pairp():
             binding = bindings.car
-            self.check_form(2, 2, expr = binding)  # Checks that all the bindings are in the form (binding symbol)
-            if not binding.pairp():
+            try:
+                self.check_form(2, 2, expr = binding)  # Checks that all the bindings are in the form (binding symbol)
+            except SchemeError:
                 raise SchemeError("badly formed bindings, all bindings should be in a list")
             symbols = Pair(binding.car,symbols)
             vals.append(self.full_eval(binding.cdr.car))
@@ -374,8 +377,9 @@ class Evaluation:
         let_frame = self.env.make_call_frame(NULL,[])
         while bindings.pairp():
             binding = bindings.car
-            self.check_form(2, 2, expr = binding)  # Checks that all bindings are in the form (symbol value)
-            if not binding.pairp():
+            try:
+                self.check_form(2, 2, expr = binding)  # Checks that all the bindings are in the form (binding symbol)
+            except SchemeError:
                 raise SchemeError("badly formed bindings, all bindings should be in a list")
             let_frame.define(binding.car,self.full_eval(binding.cdr.car, let_frame))
             bindings = bindings.cdr
