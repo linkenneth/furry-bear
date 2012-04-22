@@ -180,7 +180,7 @@ b
 (quotient 2)
 ; expect Error
 
-(quotient 2 4)
+(quotient 2 0)
 ; expect Error
 
 
@@ -251,7 +251,13 @@ b
 ;; Problem 7 (set!) ;;
 ;;;;;;;;;;;;;;;;;;;;;;
 
-; YOUR TEST CASES HERE
+(define x 4)
+(set! x 5)
+; expect 5
+
+(define (test7 n) (set! x n))
+(test7 10)
+; expect 10
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
