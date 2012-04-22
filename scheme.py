@@ -217,21 +217,22 @@ class Evaluation:
 
         # Using begin suite
         else:
-            body = Pair(Symbol.string_to_symbol("begin"), self.cdr.cdr)
+            body = Pair(Symbol.string_to_symbol("begin"), self.expr.cdr.cdr)
             fn = LambdaFunction(formals, body, self.env)
         self.set_value(fn)
 
     def do_if_form(self):
-        self.check_form(4, 4)
-        cond = self.full_eval(self.expr.cdr.car)
-        true_ans = self.full_eval(self.expr.nth(2))
-        false_ans = self.full_eval(self.expr.nth(3))
+        self.check_form(3, 4)
+        cond = self.full_eval(self.expr.nth(1))
         if cond:
-            self.set_value(true_ans)
+            ans = self.full_eval(self.expr.nth(2))
         else:
-            self.set_value(false_ans)
-                        
-  
+            if self.expr.length() == 3:
+                ans = UNSPEC
+            else:
+                ans = self.full_eval(self.expr.nth(3))
+        self.set_value(ans)
+
     def do_and_form(self):
         self.check_form(1)
 
