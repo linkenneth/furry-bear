@@ -139,6 +139,10 @@ $
 %*%@
 ; expect 42
 
+(define foo 'bar)
+foo
+; expect bar
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -183,6 +187,15 @@ $
 (symbol? 'a)
 ; expect #t
 
+(integer? 3)
+; expect #t
+
+(integer? 3.05)
+; expect #f
+
+(> 3 2)
+; expect #t
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -197,27 +210,28 @@ $
 ; expect <(lambda (x) (begin (set! y x) (+ x y))), <Global frame at 0x848444c>>
 
 (lambda (x y) (/ x y))
-; expect <(lambda (x y)  (/ x y)), <Global frame at 0x848444c>>
+; expect <(lambda (x y) (/ x y)), <Global frame at 0x848444c>>
 
 (lambda (x))
-; Error
+; expect Error
 
 (lambda (x) ())
-; expect <(lambda (x)  ()), <Global frame at 0x848444c>>
-
-(lambda (x x) (+ x x))
-; expect <(lambda (x x)  (+ x x)), <Global frame at 0x848444c>>
+; expect <(lambda (x) ()), <Global frame at 0x848444c>>
 
 (lambda (0) (1))
-; expect <(lambda (0)  (1)), <Global frame at 0x848444c>>
+; expect <(lambda (0) (1)), <Global frame at 0x848444c>>
 
 (lambda (anything) (something))
-; expect <(lambda (anything)  (something)), <Global frame at 0x848444c>>
+; expect <(lambda (anything) (something)), <Global frame at 0x848444c>>
 
 (lambda (x) (lambda (y) (+ y x)) x)
-; expect <(lambda (x)  (begin((lambda (y) (+ y x)) x))), <Global frame at 0x848444c>>
+; expect <(lambda (x) (begin (lambda (y) (+ y x)) x)), <Global frame at 0x848444c>>
 
 (lambda (+ x 1))
+; expect Error
+
+;; Our interpreter does not allow confusing non-distinct formal paramters
+(lambda (x x) (+ x 3))
 ; expect Error
 
 ;; ----- B4 ----- ;;
@@ -225,6 +239,35 @@ $
 
 (define function a (+ a 1))
 ; expect Error
+
+(define func (lambda (x) ()))
+func
+; expect <(lambda (x) ()), <Global frame at 0x848444c>>
+
+(define fun2
+  (lambda (x)
+    (lambda (y)
+      (+ y x))
+    x))
+fun2
+; expect <(lambda (x) (begin (lambda (y) (+ y x)) x)), <Global frame at 0x848444c>>
+
+(define (func x) ())
+func
+; expect <(lambda (x) ()), <Global frame at 0x848444c>>
+
+(define (hello person) (display person) (newline))
+hello
+; expect <(lambda (person) (begin (display person) (newline))), <Global frame at 0x848444c>>
+
+(define (variable-arguments x . T)
+  (display x)
+  (newline)
+  (display T)
+  (newline))
+variable-arguments
+; expect <(lambda (x . T) (begin (display x) (newline) (display T) (newline))), <Global frame at 0x848444c>>
+
 
 ;; ----- A5/B5/6 ----- ;;
 ;; ------------------- ;;
@@ -259,6 +302,9 @@ $
   (+ x y))
 (test1 3)
 ; expect 6
+
+(test1 -99)
+; expect -198
 
 (define func (lambda (x) (* x x)))
 (func 10)
