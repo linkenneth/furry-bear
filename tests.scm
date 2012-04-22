@@ -77,8 +77,9 @@
 '(.)
 ; expect Error
 
+;; Must match weird STk output
 '( . 4)
-; expect Error
+; expect 4
 
 '(#t . #f)
 ; expect (#t . #f)
@@ -106,20 +107,6 @@
 ;; Problem A2 and B2 (symbol evaluation and simple defines) ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define (add_one x) (+ x 1))
-(add_one 10)
-; expect 11
-
-(define (add_squares a b) (+ (* a a) (* b b)))
-(add_squares 6 8)
-; expect 100
-
-(add_squares 5)
-; expect Error
-
-(define function a (+ a 1))
-; expect Error
-
 (define a 2)
 a
 ; expect 2
@@ -128,33 +115,29 @@ a
 b
 ; expect 2
 
-(define (test1 x) (define y x) (+ x y))
-(test1 3)
-; expect 6
+a
+; expect 2
 
-(define (have_money? x) (define (helper x n)
-		    (cond ((= x 100) #t)
-			  ((= x 0) #f)
-			  (else (+ x n)))) (helper x 99))
-(have_money? 100)
-; expect #t
+'a
+; expect a
 
-(have_money? 1)
-; expect 100
+'b
+; expect b
 
-(have_money?)
+(define $ 3)
+$
+; expect 3
+
+(define $ a b)
 ; expect Error
 
-(define (test2) (define (helper x) (+ x (* x x) (- 10 x))) helper)
-((test2) 100)
-; expect 10010
+(define $ a)
+$
+; expect 2
 
-(test2 100)
-; expect Error
-
-(define (id x) x)
-(id 'samething)
-; expect samething
+(define %*%@ 42)
+%*%@
+; expect 42
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -166,10 +149,11 @@ b
 (+ (* 2 2) (/ 2 1))
 ; expect 6
 
+;; Custom zero-division error
 (/ 1 0)
 ; expect Error
 
-(/ 0 10 0)
+(/ 5 10 3)
 ; expect Error
 
 (cdr '(3 4 5))
@@ -183,6 +167,21 @@ b
 
 (quotient 2 0)
 ; expect Error
+
+(quotient 2 3)
+; expect 0
+
+(+ 3.2 4.1 2.8 0.8)
+; expect 10.9
+
+(not 3)
+; expect #f
+
+(list? '(3 4 2))
+; expect #t
+
+(symbol? 'a)
+; expect #t
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -224,6 +223,43 @@ b
 ;; ----- B4 ----- ;;
 ;; -------------- ;;
 
+(define function a (+ a 1))
+; expect Error
+
+;; ----- A5/B5/6 ----- ;;
+;; ------------------- ;;
+
+(define (test2)
+  (define (helper x)
+    (+ x (* x x) (- 10 x)))
+  helper)
+((test2) 100)
+; expect 10010
+
+(test2 100)
+; expect Error
+
+(define (have_money? x)
+  (define (helper x n)
+    (cond ((= x 100) #t)
+	  ((= x 0) #f)
+	  (else (+ x n))))
+  (helper x 99))
+(have_money? 100)
+; expect #t
+
+(have_money? 1)
+; expect 100
+
+(have_money?)
+; expect Error
+
+(define (test1 x)
+  (define y x)
+  (+ x y))
+(test1 3)
+; expect 6
+
 (define func (lambda (x) (* x x)))
 (func 10)
 ; expect 100
@@ -235,8 +271,16 @@ b
 (func1 2)
 ; expect Error
 
-;; ------ testing do_define_form ------- ;;
-;; ------------------------------------- ;;
+(define (add_one x) (+ x 1))
+(add_one 10)
+; expect 11
+
+(define (add_squares a b) (+ (* a a) (* b b)))
+(add_squares 6 8)
+; expect 100
+
+(add_squares 5)
+; expect Error
 
 (define (func (x y) z) (+ x 1))
 (func (1 2) 3)
@@ -245,8 +289,9 @@ b
 (func 2 5)
 ; expect 6
 
-
-
+(define (id x) x)
+(id 'samething)
+; expect samething
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
