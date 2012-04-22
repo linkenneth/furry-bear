@@ -222,7 +222,7 @@ class Evaluation:
         formals = self.expr.nth(1)  # gets the arguments
         self.check_formals(formals)
         fn = LambdaFunction(formals,make_single_body(self.expr.cdr.cdr),self.env)
-        self.set_value(fn)
+        self.set_expr(fn)
 
     # To handle tail-recursion for conditionals, make sure the final
     # result of the conditional uses set_expr as opposed to set_value
@@ -231,12 +231,12 @@ class Evaluation:
         self.check_form(3, 4)
         cond = self.full_eval(self.expr.nth(1))
         if cond:
-            ans = self.full_eval(self.expr.nth(2))
+            ans = self.expr.nth(2)
         else:
             if self.expr.length() == 3:
                 ans = UNSPEC
             else:
-                ans = self.full_eval(self.expr.nth(3))
+                ans = self.expr.nth(3)
         self.set_expr(ans)
 
     def do_and_form(self):
@@ -285,14 +285,13 @@ class Evaluation:
                 if clause.length() == 1:
                     self.set_value(test)
                 elif clause.cdr.car is self._ARROW_SYM:
-                    if not self.full_eval(clause.nth(2)):
-                        return
-                    else:
-                        self.set_expr(clause.nth(2))
+                    if clause.cdr.cdr.nullp():
+                        raise SchemeError("no function specified for 'cond'")
+                    self.set_expr(make_list(clause.nth(2),test))
                 else:
                     for i in range(1, clause.length()):  # Loops to evaluate possible returns first so it checks for possible SchemeErrors
                         self.full_eval(clause.nth(i))
-                    self.set_expr(clause.nth(clause.length()-1)) #  Returns the last of the options
+                    self.set_expr(clause.nth(clause.length()-1))  # Returns the last of the options
                 return
         self.set_value(UNSPEC)
 
