@@ -269,6 +269,7 @@ class Evaluation:
     def do_cond_form(self):
         self.check_form(1)
         clauses = self.expr.cdr
+
         while clauses.pairp():
             clause = clauses.car
             self.check_form(1, expr = clause)
@@ -278,8 +279,10 @@ class Evaluation:
                 try:
                     self.check_form(2, expr = clause)
                 except SchemeError:
-                    raise SchemeError("else form badly formed")
-                test = True
+                    raise SchemeError("badly formed else clause")
+                if not clauses.cdr.nullp():
+                    raise SchemeError("else clause must be the last clause in cond")
+                test = TRUE
             else:
                 test = self.full_eval(clause.car)
 
@@ -296,6 +299,7 @@ class Evaluation:
                     self.evaluate_expr_seq_and_set_expr_as_last(expr_seq)
                 return
             clauses = clauses.cdr
+
         self.set_value(UNSPEC)
 
     def do_set_bang_form(self):
@@ -341,19 +345,25 @@ class Evaluation:
         self.check_form(3)
         bindings = self.expr.cdr.car  # of form ((VAR1 INIT1)(VAR2 INIT2)...)
         exprs = self.expr.cdr.cdr  # of form (BODY1)(BODY2)...
-        if not scm_listp(bindings):
-            raise SchemeError("badly formed bindings")
-        
+
+        # Check that bindings is of the correct form
+        try:
+            self.check_form(1, expr = bindings)
+        except SchemeError:
+            raise SchemeError("badly formed bindings - incorrect number of subforms")
         
         # Create new env frame and bindings
         symbols = NULL
         vals = []
         while bindings.pairp():
             binding = bindings.car
+
+            # Check that each binding is in the form (symbol value)
             try:
-                self.check_form(2, 2, expr = binding)  # Checks that all the bindings are in the form (binding symbol)
+                self.check_form(2, 2, expr = binding)
             except SchemeError:
-                raise SchemeError("badly formed bindings, all bindings should be in a list")
+                raise SchemeError("badly formed binding in " + binding.car)
+
             symbols = Pair(binding.car,symbols)
             vals.append(self.full_eval(binding.cdr.car))
             bindings = bindings.cdr
@@ -370,17 +380,24 @@ class Evaluation:
         self.check_form(3)
         bindings = self.expr.cdr.car  # of form ((VAR1 INIT1)(VAR2 INIT2)...)
         exprs = self.expr.cdr.cdr  # of form (BODY1)(BODY2)...
-        if not scm_listp(bindings) or not scm_listp(bindings.car):
-            raise SchemeError("bad bindings list in let form")
 
+        # Check that bindings is of the correct form
+        try:
+            self.check_form(1, expr = bindings)
+        except SchemeError:
+            raise SchemeError("badly formed bindings - incorrect number of subforms")
+        
         # Create new EMPTY env frame
         let_frame = self.env.make_call_frame(NULL,[])
         while bindings.pairp():
             binding = bindings.car
+
+            # Check that each binding is in the form (symbol value)
             try:
-                self.check_form(2, 2, expr = binding)  # Checks that all the bindings are in the form (binding symbol)
+                self.check_form(2, 2, expr = binding)
             except SchemeError:
-                raise SchemeError("badly formed bindings, all bindings should be in a list")
+                raise SchemeError("badly formed binding in " + binding.car)
+
             let_frame.define(binding.car,self.full_eval(binding.cdr.car, let_frame))
             bindings = bindings.cdr
 
@@ -402,8 +419,12 @@ class Evaluation:
 
             # if an else clause
             if data is self._ELSE_SYM:
-                if clause.cdr.nullp() or not clauses.cdr.nullp():
+                try:
+                    self.check_form(2, expr = clause)
+                except SchemeError:
                     raise SchemeError("badly formed else clause")
+                if not clauses.cdr.nullp():
+                    raise SchemeError("else clause must be the last clause in cond")
                 self.evaluate_expr_seq_and_set_expr_as_last(expr_seq)
                 return
 
@@ -415,6 +436,7 @@ class Evaluation:
                     return
                 data = data.cdr
             clauses = clauses.cdr
+
         self.set_value(UNSPEC)
 
 
@@ -746,7 +768,7 @@ def create_global_environment():
     the_global_environment = EnvironFrame(None)
     
     # Uncomment the following line after you finish with Problem 4.
-    #scm_load(Symbol.string_to_symbol(SCHEME_PRELUDE_FILE))
+    scm_load(Symbol.string_to_symbol(SCHEME_PRELUDE_FILE))
     define_primitives(the_global_environment, _PRIMITIVES)
 
 input_port = None
