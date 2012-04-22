@@ -235,7 +235,6 @@ class Evaluation:
 
     def do_and_form(self):
         self.check_form(1)
-
         if self.expr.length() == 1:
             self.set_value(TRUE)
             return
@@ -528,9 +527,10 @@ def scm_read():
         elif syntax == ".":
             input_port.pop()
             temp = scm_read()
-            if input_port.pop()[0] != ")":
-                raise SchemeError("missing right parenthesis")
-            return temp
+            if input_port.pop()[0] == ")":  # 
+                return temp
+            else:
+                
         return Pair(scm_read(), read_tail())
 
     if input_port.current is None:
