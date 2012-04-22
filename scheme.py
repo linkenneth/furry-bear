@@ -6,7 +6,7 @@ from ucb import main, trace
 from scheme_tokens import *
 from scheme_utils import *
 from scheme_primitives import *
-#test
+
 # Name of file containing Scheme definitions.
 SCHEME_PRELUDE_FILE = "scheme_prelude.scm"
 
@@ -61,7 +61,6 @@ class LambdaFunction(SchemeValue):
                .format(repr(self.formals), repr(self.body), repr(self.env))
 
 class EnvironFrame:
-
     """An environment frame, representing a mapping from Scheme symbols to
     Scheme values, possibly enclosed within another frame."""
 
@@ -277,9 +276,13 @@ class Evaluation:
 
     def do_set_bang_form(self):
         self.check_form(3, 3)
-        "*** YOUR CODE HERE ***"
-        self.set_value(UNSPEC)
-        
+        to_set = self.expr.nth(1)
+        new_value = self.full_eval(self.expr.nth(2))
+        if to_set.symbolp():
+            if self.env.find(to_set):
+                self.env.define(to_set, new_value)
+                self.set_value(UNSPEC)
+
     def do_define_form(self):
         self.check_form(3)
         target = self.expr.nth(1)
@@ -297,7 +300,7 @@ class Evaluation:
         # Defining functions
         else:
             self.check_formals(target.cdr)
-            self.env.define(target.car, self.full_eval(Pair(Symbol.string_to_symbol("lambda"), Pair(target.cdr, Pair(self.expr.nth(2),NULL)))))
+            self.env.define(target.car, self.full_eval(Pair(Symbol.string_to_symbol("lambda"), Pair(target.cdr, Pair(self.expr.cdr.cdr, NULL))))
             self.set_value(UNSPEC)
 
     def do_begin_form(self):
@@ -643,7 +646,11 @@ def create_global_environment():
     the_global_environment = EnvironFrame(None)
     
     # Uncomment the following line after you finish with Problem 4.
+<<<<<<< .merge_file_aT52HV
     #scm_load(Symbol.string_to_symbol(SCHEME_PRELUDE_FILE))
+=======
+    # scm_load(Symbol.string_to_symbol(SCHEME_PRELUDE_FILE))
+>>>>>>> .merge_file_1O7y4l
     define_primitives(the_global_environment, _PRIMITIVES)
 
 input_port = None

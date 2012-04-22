@@ -91,7 +91,13 @@ class S_Expr(SchemeValue):
     """An S_Expr is a Scheme value that can be returned by the reader.
     Other Scheme values can only result from the evaluation of functions or
     forms (e.g., the values of lambda expressions)."""
-    
+
+def make_list(*args):
+    if not args:
+        return args
+    else:
+        return Pair(args[0], make_list(args[1:]))
+
 class Pair(S_Expr):
     def __init__(self, x, y):
         self.car = x
