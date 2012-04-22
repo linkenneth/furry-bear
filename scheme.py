@@ -61,7 +61,6 @@ class LambdaFunction(SchemeValue):
                .format(repr(self.formals), repr(self.body), repr(self.env))
 
 class EnvironFrame:
-
     """An environment frame, representing a mapping from Scheme symbols to
     Scheme values, possibly enclosed within another frame."""
 
@@ -106,30 +105,28 @@ class EnvironFrame:
         the number of preceding ("normal") formal symbols, and the last
         formal symbol is bound to a Scheme list containing the remaining
         values in VALS (which may be 0)."""
-        # FORMALS is a Scheme list, VALS is a Python list
 
-        length = formals.length()
-        
+        # FORMALS is a Scheme list (last one could be pair), VALS is a Python list
+
         # Error checking
-        if len(vals) < length:
-            raise SchemeError("too few arguments provided")
-        if scm_listp(formals) and len(vals) > length:
-                raise SchemeError("too many arguments provided")
+        if scm_listp(formals) and len(vals) > formals.length():
+            raise SchemeError("too many arguments provided")
 
         # Defining formals
         call_frame = EnvironFrame(self)
         i = 0
-        while i < length:
-            if i == length-1:
-                if formals.symbolp():
-                    rest = NULL
-                    for k in vals[:i-1:-1]:
-                        rest = Pair(k,rest)
-                    call_frame.define(formals,rest)
-                    break
-            call_frame.define(formals.car,vals[i])
-            i += 1
+        while formals.pairp():
+            try:
+                call_frame.define(formals.car,vals[i])
+            except KeyError:
+                raise SchemeError("too few arguments provided")
             formals = formals.cdr
+            i += 1
+        if formals.symbolp():
+            rest = NULL
+            for k in vals[:i-1:-1]:
+                rest = Pair(k,rest)
+            call_frame.define(formals,rest)
 
         return call_frame
 
@@ -408,19 +405,23 @@ class Evaluation:
         """Check that FORMAL_LIST is a valid parameter list having either 
         the form (sym1 sym2 ... symn) or else (sym1 sym2 ... symn . symrest),
         where each symx is a distinct symbol."""
-        index, length = 0, formal_list.length()-1
         distinct = set()
-        while index < length:
-            if not formal_list.car.symbolp():
-                raise SchemeError("argument {0} is not a valid symbol".format(index))
-            elif formal_list.car in distinct:
+        while not formal_list.nullp():
+            if formal_list.pairp():
+                item_to_check = formal_list.car
+            else:
+                item_to_check = formal_list
+
+            if not item_to_check.symbolp():
+                raise SchemeError("argument #{0} is not a valid symbol".format(index))
+            elif item_to_check in distinct:
                 raise SchemeError("formal parameters provided are not distinct")
-            elif not formal_list.cdr.pairp():
-                if index != length-1:
-                    raise SchemeError("malformed list or pair at parameter {0}".format(index))
-            distinct.add(formal_list.car)
-            formal_list = formal_list.cdr
-            index += 1
+
+            if item_to_check is formal_list:
+                break
+            else:
+                distinct.add(item_to_check)
+                formal_list = formal_list.cdr
 
 def scm_eval(sexpr):
     # To begin with, this function simply returns SEXPR unchanged, without
@@ -488,7 +489,7 @@ def read_eval_print(prompt = None):
             if prompt is not None:
                 print(prompt, end = "")
             sys.stdout.flush()
-            expr = scm_read()    #Get the expression as objects
+            expr = scm_read()  # Get the expression as objects
             if expr is THE_EOF_OBJECT:
                 return
             val = scm_eval(expr)   
@@ -645,7 +646,7 @@ def create_global_environment():
     the_global_environment = EnvironFrame(None)
     
     # Uncomment the following line after you finish with Problem 4.
-    # scm_load(Symbol.string_to_symbol(SCHEME_PRELUDE_FILE))
+    #scm_load(Symbol.string_to_symbol(SCHEME_PRELUDE_FILE))
     define_primitives(the_global_environment, _PRIMITIVES)
 
 input_port = None
