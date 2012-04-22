@@ -268,16 +268,20 @@ class Evaluation:
 
     def do_cond_form(self):
         self.check_form(1)
-        num_clauses = self.expr.length() - 1
-        for i in range(1, num_clauses + 1):
-            clause = self.expr.nth(i)
+        clauses = self.expr.cdr
+        while clauses.pairp():
+            clause = clauses.car
             self.check_form(1, expr = clause)
-            if clause.car is self._ELSE_SYM and i == num_clauses:
+
+            # Determining truthfulness of test expression
+            if clause.car is self._ELSE_SYM:
                 test = True
-                if clause.cdr.nullp():
+                if clause.cdr.nullp() or not clauses.cdr.nullp():
                     raise SchemeError("badly formed else clause")
             else:
                 test = self.full_eval(clause.car)
+
+            # if true, evaluate expression sequence
             if test:
                 if clause.length() == 1:
                     self.set_value(test)
@@ -286,10 +290,17 @@ class Evaluation:
                         raise SchemeError("no function specified for 'cond'")
                     self.set_expr(make_list(clause.nth(2),test))
                 else:
-                    for i in range(1, clause.length()):  # Loops to evaluate possible returns first so it checks for possible SchemeErrors
-                        self.full_eval(clause.nth(i))
-                    self.set_expr(clause.nth(clause.length()-1))  # Returns the last of the options
+                    expr_seq = clause.cdr
+                    # Loops to evaluate possible returns first so it
+                    # checks for possible SchemeErrors
+                    while expr_seq.pairp():
+                        expr = expr_seq.car
+                        self.full_eval(expr)
+                        expr_seq = expr_seq.cdr
+                    # Returns the last of the options
+                    self.set_expr(expr)
                 return
+            clauses = clauses.cdr
         self.set_value(UNSPEC)
 
     def do_set_bang_form(self):
@@ -382,7 +393,34 @@ class Evaluation:
 
     def do_case_form(self):
         self.check_form(2)
+        k = self.full_eval(self.expr.nth(1))
+        clauses = self.expr.cdr.cdr
 
+        while clauses.pairp():
+            clause = clauses.car
+            data = clause.car
+            expr_seq = clause.cdr.car
+
+            # if an else clause
+            if data is self._ELSE_SYM:
+                if clause.cdr.nullp() or not clauses.cdr.nullp():
+                    raise SchemeError("badly formed else clause")
+                while expr_seq.pairp():
+                    expr = expr_seq.car
+                    self.full_eval(expr)
+                    expr_seq = expr_seq.cdr
+                self.set_expr(expr_seq)
+            while data.pairp():
+                datum = data.car
+                if k.eqvp(datum):
+                    while expr_seq.pairp():
+                        expr = expr_seq.car
+                        self.full_eval(expr)
+                        expr_seq = expr_seq.cdr
+                    self.set_expr(expr_seq)
+                    return
+                data = data.cdr
+            clauses = clauses.cdr
         self.set_value(UNSPEC)
 
     # Symbols that are used in special forms.
