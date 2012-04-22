@@ -240,14 +240,13 @@ class Evaluation:
             self.set_value(TRUE)
             return
 
-        truth = TRUE
         rest_expr = self.expr.cdr
-        while truth:
-            if not rest_expr.cdr.pairp():
-                self.set_expr(rest.expr.cdr)
+        while rest_expr.cdr.pairp():
+            if not rest_expr.car:
+                self.set_expr(rest_expr.car)
                 return
-            if rest_expr.car.
-        self.set_expr(FALSE)
+            rest_expr = rest_expr.cdr
+        self.set_expr(rest_expr.car)
 
     def do_or_form(self):
         self.check_form(1)
@@ -256,8 +255,13 @@ class Evaluation:
             self.set_value(FALSE)
             return
 
-        "*** YOUR CODE HERE ***"
-        self.set_expr(FALSE)
+        rest_expr = self.expr.cdr
+        while rest_expr.cdr.pairp():
+            if rest_expr.car:
+                self.set_expr(rest_expr.car)
+                return
+            rest_expr = rest_expr.cdr
+        self.set_expr(rest_expr.car)
 
     def do_cond_form(self):
         self.check_form(1)
