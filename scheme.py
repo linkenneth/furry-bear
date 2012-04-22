@@ -224,8 +224,12 @@ class Evaluation:
     def do_if_form(self):
         self.check_form(4, 4)
         cond = self.full_eval(self.expr.cdr.car)
-        "*** YOUR CODE HERE ***"
-        self.set_expr(FALSE)
+        true_ans = self.full_eval(self.expr.nth(2))
+        false_ans = self.full_eval(self.expr.nth(3))
+        if cond:
+            self.set_value(true_ans)
+        else:
+            self.set_value(false_ans)
                         
   
     def do_and_form(self):
