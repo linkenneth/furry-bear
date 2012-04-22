@@ -86,7 +86,6 @@
 (define (negative? x)
   (< x 0))
 
-;; Causing list length Error
 (define (max L0 . L)
   (define (max1 head rest)
     (cond ((null? rest) head)
@@ -94,7 +93,6 @@
           (else (max1 head (cdr rest)))))
   (max1 L0 L))
 
-;; Causing list length Error
 (define (min L0 . L)
   (define (min1 head rest)
     (cond ((null? rest) head)

@@ -177,7 +177,7 @@ class Evaluation:
         elif expr.atomp():
             self.set_value(expr)
         elif not scm_listp(expr):
-            raise SchemeError("malformed list: {0}".format(str(self)))
+            raise SchemeError("malformed list: {0}".format(str(self.expr)))
         else:
             op = expr.car
             if op.symbolp():
@@ -217,7 +217,7 @@ class Evaluation:
 
         # Using begin suite
         else:
-            body = Pair(Symbol.string_to_symbol("begin"), self.expr.cdr.cdr)
+            body = Pair(_BEGIN_SYM, self.expr.cdr.cdr)
             fn = LambdaFunction(formals, body, self.env)
         self.set_value(fn)
 
@@ -239,8 +239,13 @@ class Evaluation:
             self.set_value(TRUE)
             return
 
-        "*** YOUR CODE HERE ***"
-        self.set_expr(FALSE)
+        rest_expr = self.expr.cdr
+        while rest_expr.cdr.pairp():
+            if not rest_expr.car:
+                self.set_expr(rest_expr.car)
+                return
+            rest_expr = rest_expr.cdr
+        self.set_expr(rest_expr.car)
 
     def do_or_form(self):
         self.check_form(1)
@@ -249,16 +254,21 @@ class Evaluation:
             self.set_value(FALSE)
             return
 
-        "*** YOUR CODE HERE ***"
-        self.set_expr(FALSE)
+        rest_expr = self.expr.cdr
+        while rest_expr.cdr.pairp():
+            if rest_expr.car:
+                self.set_expr(rest_expr.car)
+                return
+            rest_expr = rest_expr.cdr
+        self.set_expr(rest_expr.car)
 
     def do_cond_form(self):
         self.check_form(1)
-        num_clauses = self.expr.length()
-        for i in range(1, num_clauses):
+        num_clauses = self.expr.length()-1
+        for i in range(num_clauses):
             clause = self.expr.nth(i)
             self.check_form(1, expr = clause)
-            if clause.car is self._ELSE_SYM and i == num_clauses-1:
+            if clause.car is self._ELSE_SYM and i == num_clauses:
                 test = TRUE
                 if clause.cdr.nullp():
                     raise SchemeError("badly formed else clause")
@@ -307,7 +317,7 @@ class Evaluation:
             # if one expression
             self.env.define(target.car, self.full_eval(LambdaFunction(target.cdr,self.expr.nth(2), self.env)))
             # if multiple expressions - use begin suite
-            self.env.define(target.car, self.full_eval(LambdaFunction(target.cdr, Pair(Symbol.string_to_symbol("begin"),self.expr.cdr.cdr), self.env)))
+            self.env.define(target.car, self.full_eval(LambdaFunction(target.cdr, Pair(_BEGIN_SYM, self.expr.cdr.cdr), self.env)))
             self.set_value(UNSPEC)
 
     def do_begin_form(self):
