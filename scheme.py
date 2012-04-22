@@ -537,11 +537,14 @@ def scm_read():
             return NULL
         elif syntax == ".":
             input_port.pop()
-            temp = scm_read()
-            if input_port.pop()[0] != ")":
-                raise SchemeError("missing right parenthesis")
-            return temp
-        return Pair(scm_read(), read_tail())
+            # to recognize malformed pairs
+            rest = read_tail()
+            if not rest.cdr.nullp():
+                raise SchemeError("malformed pair")
+            else:
+                return rest.car
+        else:
+            return Pair(scm_read(), read_tail())
 
     if input_port.current is None:
         return THE_EOF_OBJECT
