@@ -60,6 +60,17 @@ class LambdaFunction(SchemeValue):
         return "LambdaFunction({0}, {1}, {2})" \
                .format(repr(self.formals), repr(self.body), repr(self.env))
 
+## LambdaFunction Utility Function ##
+def make_single_body(exprs):
+    """Utility function to make a single Scheme expression for the
+    LambdaFunction class from multiple individual Scheme
+    expressions. Returns the unchanged single expression if there is
+    only one such expression."""
+    if exprs.nullp() or exprs.cdr.nullp():
+        return exprs.car
+    else:
+        return Pair(Evaluation._BEGIN_SYM, exprs)
+
 class EnvironFrame:
     """An environment frame, representing a mapping from Scheme symbols to
     Scheme values, possibly enclosed within another frame."""
@@ -210,15 +221,7 @@ class Evaluation:
         self.check_form(3)
         formals = self.expr.nth(1)  # gets the arguments
         self.check_formals(formals)
-
-        # Optimizations for single expressions
-        if self.expr.length() == 3:
-            fn = LambdaFunction(formals,self.expr.nth(2),self.env)  # gets the body of the function
-
-        # Using begin suite
-        else:
-            body = Pair(self._BEGIN_SYM, self.expr.cdr.cdr)
-            fn = LambdaFunction(formals, body, self.env)
+        fn = LambdaFunction(formals,make_single_body(self.expr.cdr.cdr),self.env)
         self.set_value(fn)
 
     # To handle tail-recursion for conditionals, make sure the final
@@ -324,14 +327,7 @@ class Evaluation:
         # Defining functions
         else:
             self.check_formals(target.cdr)
-            body = self.expr.cdr.cdr
-
-            # if one expression
-            if body.nullp() or body.cdr.nullp():
-                self.env.define(target.car, self.full_eval(LambdaFunction(target.cdr,self.expr.nth(2), self.env)))
-            # if multiple expressions - use begin suite
-            else:
-                self.env.define(target.car, self.full_eval(LambdaFunction(target.cdr, Pair(self._BEGIN_SYM, self.expr.cdr.cdr), self.env)))
+            self.env.define(target.car, self.full_eval(LambdaFunction(target.cdr,make_single_body(self.expr.cdr.cdr), self.env)))
             self.set_value(UNSPEC)
 
     def do_begin_form(self):
@@ -570,7 +566,7 @@ def scm_read():
     elif syntax == SYMBOL:
         return Symbol.string_to_symbol(val)
     elif syntax == "'":
-        return Pair(Symbol.string_to_symbol("quote"), Pair(scm_read(), NULL))
+        return Pair(Evaluation._QUOTE_SYM, Pair(scm_read(), NULL))
     elif syntax == "(":
         return read_tail()
     else:
