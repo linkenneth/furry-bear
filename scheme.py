@@ -242,7 +242,7 @@ class Evaluation:
 
         rest_expr = self.expr.cdr
         while rest_expr.cdr.pairp():
-            if not rest_expr.car:
+            if not self.full_eval(rest_expr.car):
                 self.set_expr(rest_expr.car)
                 return
             rest_expr = rest_expr.cdr
@@ -257,7 +257,7 @@ class Evaluation:
 
         rest_expr = self.expr.cdr
         while rest_expr.cdr.pairp():
-            if rest_expr.car:
+            if self.full_eval(rest_expr.car):
                 self.set_expr(rest_expr.car)
                 return
             rest_expr = rest_expr.cdr

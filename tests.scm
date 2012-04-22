@@ -336,13 +336,15 @@ variable-arguments
 (f 3 5 8 6 9)
 ; expect 10
 
-(define (concatenationnn a b c)
+(define (concatenationnn a b c d)
   (begin
     (display a)
     (display b)
-    (display c)))
-(concatenationnn 1 2 'b)
-; expect 12b
+    (display c)
+    (display d)
+    (newline)))
+(concatenationnn 1 'xye 7 'awer)
+; expect 1xye7awer
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -353,11 +355,27 @@ variable-arguments
 
 (define x 4)
 (set! x 5)
+x
 ; expect 5
 
 (define (test7 n) (set! x n))
 (test7 10)
+x
 ; expect 10
+
+(define a 99)
+(test7 a)
+x
+; expect 99
+
+(define (change-fail x) (set! x 10))
+(change-fail x)
+x
+; expect 99
+
+(test7 'awerup)
+x
+; expect awerup
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -376,20 +394,88 @@ variable-arguments
 ; expect 100
 
 (if #f 0)
-; expect
 
-(if #t (+ 10 5))
+(if 3 (+ 10 5))
 ; expect 15
 
 (if #f (+ 12 10) (/ 3 0))
 ; expect Error
 
+(if 'mymom #t #f)
+; expect #t
+
+(if (and 'myDad 'yourMom) 'damn)
+; expect damn
+
+(and 1 2 3)
+; expect 3
+
+(and 2 5 #f)
+; expect #f
+
+(and #f notadefinedfunction)
+; expect #f
+
+(and)
+; expect #t
+
+(and (and (and (and 2 7 'a 'hehh 'huehuehue) 3 2 (and 'at23t 2) (and) #f (and 2 79 -9 0 0 0 20 0))) 'hi)
+; expect #f
+
+(and #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t #t)
+; expect #t
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Problem B8 (cond, or) ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(or 1 2 3)
+; expect 3
+
+(or 2 5 #f)
+; expect 2
+
+(or #f notadefinedfunction)
+; expect Error
+
+(or)
+; expect #f
+
+(or (or (or (or 2 7 'a 'hehh 'huehuehue) 3 2 (or 'at23t 2) (or) #f (or 2 79 -9 0 0 0 20 0))) 'hi)
+; expect 2
+
+(or #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f #f)
+; expect #f
+
+(cond ((> 3 2) 'greater)
+      ((< 3 2) 'less))
+; expect greater
+
+(cond ((> 3 3) 'greater)
+      ((< 3 3) 'less)
+      (else 'equal))
+; expect equal
+
+(cond ((if (< -2 -3) #f -3) => abs)
+      (else #f))
+; expect 3
+
+(cond (90 => (lambda (x) (/ x 3)))
+      (else notgonnahappen))
+; expect 30.0
+
+(cond (else 3))
+; expect 3
+
+(define (append-to-z a)
+  (cond (a => (lambda (x) (cons 'z x)))
+	(else notgonnahappeneither)))
+(append-to-z 'a)
+; expect (z . a)
+(append-to-z 5)
+; expect (z . 5)
 
 (define (have_money? x)
   (define (helper x n)
