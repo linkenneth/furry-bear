@@ -93,10 +93,11 @@ class S_Expr(SchemeValue):
     forms (e.g., the values of lambda expressions)."""
 
 def make_list(*args):
-    if not args:
-        return args
-    else:
-        return Pair(args[0], make_list(args[1:]))
+    r = list(args)
+    result = NULL
+    while r:
+        result = Pair(r.pop(), result)
+    return result
 
 class Pair(S_Expr):
     def __init__(self, x, y):

@@ -60,6 +60,17 @@ class LambdaFunction(SchemeValue):
         return "LambdaFunction({0}, {1}, {2})" \
                .format(repr(self.formals), repr(self.body), repr(self.env))
 
+## LambdaFunction Utility Function ##
+def make_single_body(exprs):
+    """Utility function to make a single Scheme expression for the
+    LambdaFunction class from multiple individual Scheme
+    expressions. Returns the unchanged single expression if there is
+    only one such expression."""
+    if exprs.nullp() or exprs.cdr.nullp():
+        return exprs.car
+    else:
+        return Pair(Evaluation._BEGIN_SYM, exprs)
+
 class EnvironFrame:
     """An environment frame, representing a mapping from Scheme symbols to
     Scheme values, possibly enclosed within another frame."""
@@ -210,28 +221,23 @@ class Evaluation:
         self.check_form(3)
         formals = self.expr.nth(1)  # gets the arguments
         self.check_formals(formals)
+        fn = LambdaFunction(formals,make_single_body(self.expr.cdr.cdr),self.env)
+        self.set_expr(fn)
 
-        # Optimizations for single expressions
-        if self.expr.length() == 3:
-            fn = LambdaFunction(formals,self.expr.nth(2),self.env)  # gets the body of the function
-
-        # Using begin suite
-        else:
-            body = Pair(self._BEGIN_SYM, self.expr.cdr.cdr)
-            fn = LambdaFunction(formals, body, self.env)
-        self.set_value(fn)
+    # To handle tail-recursion for conditionals, make sure the final
+    # result of the conditional uses set_expr as opposed to set_value
 
     def do_if_form(self):
         self.check_form(3, 4)
         cond = self.full_eval(self.expr.nth(1))
         if cond:
-            ans = self.full_eval(self.expr.nth(2))
+            ans = self.expr.nth(2)
         else:
             if self.expr.length() == 3:
                 ans = UNSPEC
             else:
-                ans = self.full_eval(self.expr.nth(3))
-        self.set_value(ans)
+                ans = self.expr.nth(3)
+        self.set_expr(ans)
 
     def do_and_form(self):
         self.check_form(1)
@@ -280,13 +286,10 @@ class Evaluation:
                     self.set_value(test)
                 elif clause.cdr.car is self._ARROW_SYM:
                     if clause.cdr.cdr.nullp():
-                        raise SchemeError("not good")
-                    func = clause.nth(2)
-                    self.set_expr(Pair(clause.nth(2), Pair(test, NULL)))
                 else:
                     for i in range(1, clause.length()):  # Loops to evaluate possible returns first so it checks for possible SchemeErrors
                         self.full_eval(clause.nth(i))
-                    self.set_expr(clause.nth(clause.length()-1)) #  Returns the last of the options
+                    self.set_expr(clause.nth(clause.length()-1))  # Returns the last of the options
                 return
         self.set_value(UNSPEC)
 
@@ -320,14 +323,7 @@ class Evaluation:
         # Defining functions
         else:
             self.check_formals(target.cdr)
-            body = self.expr.cdr.cdr
-
-            # if one expression
-            if body.nullp() or body.cdr.nullp():
-                self.env.define(target.car, self.full_eval(LambdaFunction(target.cdr,self.expr.nth(2), self.env)))
-            # if multiple expressions - use begin suite
-            else:
-                self.env.define(target.car, self.full_eval(LambdaFunction(target.cdr, Pair(self._BEGIN_SYM, self.expr.cdr.cdr), self.env)))
+            self.env.define(target.car, self.full_eval(LambdaFunction(target.cdr,make_single_body(self.expr.cdr.cdr), self.env)))
             self.set_value(UNSPEC)
 
     def do_begin_form(self):
@@ -344,7 +340,6 @@ class Evaluation:
             raise SchemeError("bad bindings list in let form")
         symbols = NULL
         vals = []
-        "*** YOUR CODE HERE ***"
         let_frame = self.env.make_call_frame(symbols, vals)
         for i in range(0, exprs.length()-1):
             self.full_eval(exprs.car, let_frame)
@@ -567,7 +562,7 @@ def scm_read():
     elif syntax == SYMBOL:
         return Symbol.string_to_symbol(val)
     elif syntax == "'":
-        return Pair(Symbol.string_to_symbol("quote"), Pair(scm_read(), NULL))
+        return Pair(Evaluation._QUOTE_SYM, Pair(scm_read(), NULL))
     elif syntax == "(":
         return read_tail()
     else:
