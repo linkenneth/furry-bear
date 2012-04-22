@@ -46,8 +46,7 @@ class LambdaFunction(SchemeValue):
         return "closure"
 
     def apply_step(self, args, evaluation):
-        # Is it set_expr or set_val?
-        evaluation.set_expr(Evaluation(self.body,self.env.make_call_frame(self.formals, args)).step_to_value())
+        evaluation.set_expr(self.body, self.env.make_call_frame(self.formals, args))
 
     def write(self, out):
         print("<(lambda ", file=out, end='')
@@ -334,14 +333,19 @@ class Evaluation:
 
     def do_let_form(self):
         self.check_form(3)
-        bindings = self.expr.cdr.car
-        exprs = self.expr.cdr.cdr
+        bindings = self.expr.cdr.car  # of form ((VAR1 INIT1)(VAR2 INIT2)...)
+        exprs = self.expr.cdr.cdr  # of form (BODY1)(BODY2)...
         if not scm_listp(bindings):
             raise SchemeError("bad bindings list in let form")
         symbols = NULL
         vals = []
+        while bindings.pairp():
+            binding = bindings.car
+            symbols = Pair(binding.car,symbols)
+            vals = [binding.cdr.car] + vals
+            bindings = bindings.cdr
         let_frame = self.env.make_call_frame(symbols, vals)
-        for i in range(0, exprs.length()-1):
+        for _ in range(0, exprs.length()-1):
             self.full_eval(exprs.car, let_frame)
             exprs = exprs.cdr
         self.set_expr(exprs.car, let_frame)
