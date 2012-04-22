@@ -315,10 +315,14 @@ class Evaluation:
         # Defining functions
         else:
             self.check_formals(target.cdr)
+            body = self.expr.cdr.cdr
+
             # if one expression
-            self.env.define(target.car, self.full_eval(LambdaFunction(target.cdr,self.expr.nth(2), self.env)))
+            if body.nullp() or body.cdr.nullp():
+                self.env.define(target.car, self.full_eval(LambdaFunction(target.cdr,self.expr.nth(2), self.env)))
             # if multiple expressions - use begin suite
-            self.env.define(target.car, self.full_eval(LambdaFunction(target.cdr, Pair(self._BEGIN_SYM, self.expr.cdr.cdr), self.env)))
+            else:
+                self.env.define(target.car, self.full_eval(LambdaFunction(target.cdr, Pair(self._BEGIN_SYM, self.expr.cdr.cdr), self.env)))
             self.set_value(UNSPEC)
 
     def do_begin_form(self):

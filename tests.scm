@@ -81,11 +81,20 @@
 '( . 4)
 ; expect 4
 
+'(2 968 52 58 -12 . 2 . 23 2 . 23)
+; expect Error
+
+'(2 3 . 2 3)
+; expect Error
+
 '(#t . #f)
 ; expect (#t . #f)
 
 '(#t #f #t #f)
 ; expect (#t #f #t #f)
+
+'(#t . #f . 'a)
+; expect Error
 
 'a
 ; expect a
@@ -151,7 +160,7 @@ foo
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (+ (* 2 2) (/ 2 1))
-; expect 6
+; expect 6.0
 
 ;; Custom zero-division error
 (/ 1 0)
@@ -219,7 +228,7 @@ foo
 ; expect <(lambda (x) ()), <Global frame at 0x848444c>>
 
 (lambda (0) (1))
-; expect <(lambda (0) (1)), <Global frame at 0x848444c>>
+; expect Error
 
 (lambda (anything) (something))
 ; expect <(lambda (anything) (something)), <Global frame at 0x848444c>>
@@ -234,10 +243,16 @@ foo
 (lambda (x x) (+ x 3))
 ; expect Error
 
+(lambda (x . T) (+ x T))
+; expect <(lambda (x . t) (+ x t)), <Global frame at 0x848444c>>
+
 ;; ----- B4 ----- ;;
 ;; -------------- ;;
 
 (define function a (+ a 1))
+; expect Error
+
+(define (func (x y) z) (+ x 1))
 ; expect Error
 
 (define func (lambda (x) ()))
@@ -266,7 +281,7 @@ hello
   (display T)
   (newline))
 variable-arguments
-; expect <(lambda (x . T) (begin (display x) (newline) (display T) (newline))), <Global frame at 0x848444c>>
+; expect <(lambda (x . t) (begin (display x) (newline) (display t) (newline))), <Global frame at 0x848444c>>
 
 
 ;; ----- A5/B5/6 ----- ;;
@@ -280,21 +295,6 @@ variable-arguments
 ; expect 10010
 
 (test2 100)
-; expect Error
-
-(define (have_money? x)
-  (define (helper x n)
-    (cond ((= x 100) #t)
-	  ((= x 0) #f)
-	  (else (+ x n))))
-  (helper x 99))
-(have_money? 100)
-; expect #t
-
-(have_money? 1)
-; expect 100
-
-(have_money?)
 ; expect Error
 
 (define (test1 x)
@@ -328,16 +328,22 @@ variable-arguments
 (add_squares 5)
 ; expect Error
 
-(define (func (x y) z) (+ x 1))
-(func (1 2) 3)
-; expect Error
+(define (f x . T)
+  (begin (+ x 3) (* (car T) 2)))
+(f 3 5)
+; expect 10
 
-(func 2 5)
-; expect 6
+(f 3 5 8 6 9)
+; expect 10
 
-(define (id x) x)
-(id 'samething)
-; expect samething
+(define (concatenationnn a b c)
+  (begin
+    (display a)
+    (display b)
+    (display c)))
+(concatenationnn 1 2 'b)
+; expect 12b
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -378,13 +384,27 @@ variable-arguments
 (if #f (+ 12 10) (/ 3 0))
 ; expect Error
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Problem B8 (cond, or) ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-; YOUR TEST CASES HERE
+(define (have_money? x)
+  (define (helper x n)
+    (cond ((= x 100) #t)
+	  ((= x 0) #f)
+	  (else (+ x n))))
+  (helper x 99))
+(have_money? 100)
+; expect #t
+
+(have_money? 1)
+; expect 100
+
+(have_money?)
+; expect Error
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
