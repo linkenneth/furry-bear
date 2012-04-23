@@ -416,7 +416,7 @@ class Evaluation:
             clause = clauses.car
             data = clause.car
             # if empty expr_seq but still matches, then defaults to TRUE
-            expr_seq = clause.cdr if not clause.cdr.nullp() else TRUE
+            expr_seq = clause.cdr
 
             # if an else clause
             if data is self._ELSE_SYM:
