@@ -653,7 +653,11 @@ x
 (case (or (< 2 3) huh?)
   (((= 3 3) (> 2 4)) 'infirst)
   ((#t #t #f) 'inlast))
+<<<<<<< .merge_file_ShRkZI
 ; expect inlast
+=======
+; expect 'inlast
+>>>>>>> .merge_file_UUR2DA
 
 (case (= (+ 1 1) 2)
   (((= 3 4) (< 2 6) anycrap) shouldnotgethere)
@@ -672,7 +676,23 @@ x
 (case (+ 2 3)
   (5))
 ; expect #t
+<<<<<<< .merge_file_ShRkZI
+=======
 
+(case 0
+  ('here)
+  ('there))
+; expect
+
+(case 60
+  ((60 60 60) 'triangle)
+  (else 'uhmm?))
+; expect triangle
+>>>>>>> .merge_file_UUR2DA
+
+(case error
+  (not getting here at all))
+; expect
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -736,7 +756,10 @@ filtered_ints
 ;; Reverse list L destructively, creating no new pairs.  May modify the 
 ;; cdrs of the items in list L.
 (define (reverse! L)
-   ; *** YOUR CODE HERE ***
+  (cond ((null? (cdr L)) L)
+	
+	(else (reverse! (cdr L)))
+  (set-cdr! L (cdr (cdr L)))	
 )
 
 (define L (list 1 2 3 4))
