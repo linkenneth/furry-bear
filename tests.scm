@@ -676,7 +676,6 @@ x
 (case 0
   ('here)
   ('there))
-; expect
 
 (case 60
   ((60 60 60) 'triangle)
