@@ -5,10 +5,13 @@
 (define L (list 1 2 3 4 5))
 
 (define (reverse! L)
-  (let loop ((lst lst)
-             (acc '()))
-    (if (null? lst)
-        acc
-        (let ((tail (last L)))
-          (set-cdr! (cdr L) acc)
-          (loop tail lst)))))
+  (define (reverse1 L first sofar)
+    (cond ((null? (cdr L)) L)
+	  ((not (= (length L) 1)) (reverse1 (cdr L) first sofar))
+	  (else (set-cdr! (reverse1 (cdr L) first sofar) '(car L)) (reverse1 (cdr L) first L))))
+  (reverse1 L (car L) '())
+)
+
+(define (reverse1! L)
+  (cond ((null? (cdr L)) L)
+	(else (set-cdr! (list-tail (reverse1! (cdr L)) (- (length L) 1)) (list (car L))) L)))

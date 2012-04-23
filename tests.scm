@@ -749,9 +749,13 @@ filtered_ints
 ;; Reverse list L destructively, creating no new pairs.  May modify the 
 ;; cdrs of the items in list L.
 (define (reverse! L)
-  (define (reverse1 L sofar)
-    (cond ((null? L) L)
-	  (else (reverse1 (cdr L) (set-cdr! 
+  (define (reverse1 L first sofar)
+    (cond ((null? (cdr L)) L)
+	  ((= sofar first) sofar)
+	  ((= (length L) 1) (reverse! (cdr L) first sofar))
+	  (else (reverse! (cdr L)  (set-cdr! L sofar)))))
+  (reverse1 L (car L) '())
+)
 
 
   (cond ((null? (cdr L) L)
