@@ -696,17 +696,18 @@ x
 ;; The subsequence of list S for which F outputs a true value (i.e., one
 ;; other than #f), computed destructively
 (define (filter! f s)
-  (define (filter!-tail filtered f s)
-    (cond ((null? s)
-	   filtered)
-	  ((f (car s))
-	   (append filtered (list (car s)))
-	   (set! s (cdr s))
-	   (filter!-tail filtered f s))
+  (define (filter!-tail result f l)
+    (cond ((or (null? (cdr l)) (null? l))
+	   result)
+	  ((f (cadr l))
+	   (filter!-tail result f (cdr l)))
 	  (else
-	   (set! s (cdr s))
-	   (filter!-tail filtered f s))))
-  (filter!-tail () f s))
+	   (set-cdr! l (cddr l))
+	   (filter!-tail result f l))))
+  (cond ((f (car s))
+	 (filter!-tail s f s))
+	(else
+	 (filter! f (cdr s)))))
 
 (define (big x) (> x 5))
 
