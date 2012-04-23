@@ -541,13 +541,14 @@ class Evaluation:
         expression of the evaluation as the last of these expressions."""
         # Loops to evaluate possible returns first so it
         # checks for possible SchemeErrors
-        expr = default
-        while expr_seq.pairp():
-            expr = expr_seq.car
-            self.full_eval(expr)
+        if expr_seq.nullp():
+            self.set_expr(default)
+            return
+        while expr_seq.cdr.pairp():
+            self.full_eval(expr_seq.car)
             expr_seq = expr_seq.cdr
         # Returns the last of the options
-        self.set_expr(expr)
+        self.set_expr(expr_seq.car)
 
 def scm_eval(sexpr):
     # To begin with, this function simply returns SEXPR unchanged, without
