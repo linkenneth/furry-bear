@@ -644,8 +644,10 @@ x
 (define ints1 (cdr ints))
 
 (define filtered_ints (filter! big ints))
+
 filtered_ints
 ; expect (10 8 7)
+
 (eq? filtered_ints ints1)
 ; expect #t
 
