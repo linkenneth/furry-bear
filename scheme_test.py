@@ -23,7 +23,7 @@ import sys
 from ucb import main
 from scheme import call_with_input_source, create_global_environment, \
                    read_eval_print
-import re
+from re import sub
 
 def summarize(output, expected_output):
     """Summarize results of running tests."""
