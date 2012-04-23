@@ -732,8 +732,7 @@ filtered_ints
 ;; The number of ways to change TOTAL with DENOMS
 ;; At most MAX-COINS total coins can be used.
 (define (count_change total denoms max-coins)
-  ; *** YOUR CODE HERE ***
-)
+  (define (count_change-tail total denoms max-coins
 
 (define us_coins '(50 25 10 5 1))
 (count_change 20 us_coins 18)
@@ -773,8 +772,13 @@ LR
 ;; The number of ways to partition TOTAL, where 
 ;; each partition must be at most MAX_VALUE
 (define (count-partitions total max-value)
-  ; *** YOUR CODE HERE ***
-)
+  (cond ((or (< total 0) (<= max-value 0))
+	 0)
+	((= total 0)
+	 1)
+	(else
+	 (+ (count-partitions (- total max-value) max-value)
+	    (count-partitions total (- max-value 1))))))
 
 (count-partitions 5 3)
 ; expect 5
