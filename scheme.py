@@ -7,8 +7,14 @@ from scheme_tokens import *
 from scheme_utils import *
 from scheme_primitives import *
 
+from random import choice
+from types import GeneratorType
+
 # Name of file containing Scheme definitions.
 SCHEME_PRELUDE_FILE = "scheme_prelude.scm"
+
+# Name of file containing prompts to use for random prompt generation.
+PROMPT_FILE = "prompts"
 
 class PrimitiveFunction(SchemeValue):
     """A Scheme function implemented directly in Python."""
@@ -611,9 +617,12 @@ def read_eval_print(prompt = None):
     """Read and evaluate from the current input port until the end of file.
     If PROMPT is not None, use it to prompt for input and print values of
     each expression."""
+    gen_string = isinstance(prompt, GeneratorType)
     while True:
         try:
-            if prompt is not None:
+            if gen_string:
+                print(next(prompt), end = " ")
+            elif prompt is not None:
                 print(prompt, end = "")
             sys.stdout.flush()
             expr = scm_read()  # Get the expression as objects
@@ -779,6 +788,12 @@ def create_global_environment():
     scm_load(Symbol.string_to_symbol(SCHEME_PRELUDE_FILE))
     define_primitives(the_global_environment, _PRIMITIVES)
 
+def gen_prompt_string():
+    with open(PROMPT_FILE) as prompt_file:
+        prompt_strings = prompt_file.read().split('\n')
+    while True:
+        yield choice(prompt_strings)
+
 input_port = None
 
 @main
@@ -797,5 +812,5 @@ def run(*argv):
         
     input_port = Buffer(tokenize_lines(input_file))
     create_global_environment()
-    read_eval_print("scm> ")
+    read_eval_print(gen_prompt_string())
 

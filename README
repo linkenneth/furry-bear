@@ -1,20 +1,25 @@
 NAMES:
 ----------------------------------------------------------------------
+
 Kenneth Lin
 cs61a-kn
 
 Michael Lin Yang
 cs61a-ia
 
+
 WORK SPLIT:
 ----------------------------------------------------------------------
+
 We never explicitly determined Partner A and Partner B, nor did we
 explicitly split the work for any part. We also did a lot of
 cross-checking and helping each other write their parts, so we can't
 really determine where the work split comes.
 
+
 BUGS:
 ----------------------------------------------------------------------
+
 Although our interpreter works for arbitrarily long tail recursions,
 it does not work for arbitrariliy long lists of arguments. This is
 because the structure of scm_read() lends itself to be recursive for
@@ -24,3 +29,28 @@ limits. Therefore, the autograder testing will not pass with some of
 the stress tests we introduced in our tests.scm file. This is not
 necessarily a bug but more a flaw in design that would require major
 refactoring to fix.
+
+
+NOTES:
+----------------------------------------------------------------------
+
+* In our tests.scm, we introduced many stress tests that would not
+  pass the autograder tests simply because of the number of arguments
+  it requires that the reader must read. We have provided a
+  tests_nostress.scm for running tests with higher recursion
+  limits. Note that this does not mean that our interpreter does not
+  handle tail recursion (see BUGS).
+
+* For efficiency, we refactored a lot of for loops using
+  self.expr.nth() to use while loops. Some functions may look
+  different as a result.
+
+* We defined three new utility functions to simply our code:
+  make_single_body(), evaluate_expr_seq_and_set_expr_as_last(), and
+  make_list(). The first two are defined in scheme.py, while the last
+  is defined in scheme_primitives.py.
+
+* For easier testing, we altered our scheme_test.py to treat all
+  memory locations such as 0x23fa6b etc. to be interpreted to same.
+
+* We customized our prompt a bit :)
