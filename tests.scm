@@ -731,11 +731,20 @@ filtered_ints
 
 ;; The number of ways to change TOTAL with DENOMS
 ;; At most MAX-COINS total coins can be used.
+<<<<<<< .merge_file_YWLE37
 define (count_change total denoms max-coins)
   (cond ((or (null? denoms) (< total 0)) 0)
 	((= total 0) 1)
 	((= max-coins 0) 0)
 	(else (+ (count_change (- total (car denoms)) denoms (- max-coins 1)) (count_change total (cdr denoms) max-coins)))))
+=======
+(define (count_change total denoms max-coins)
+  (cond ((or (null? denoms) (< total 0)) 0)
+	((= total 0) 1)
+	((= max-coins 0) 0)
+	(else (+ (count_change (- total (car denoms)) denoms (- max-coins 1))
+		 (count_change total (cdr denoms) max-coins)))))
+>>>>>>> .merge_file_l2AiFq
 
 (define us_coins '(50 25 10 5 1))
 (count_change 20 us_coins 18)
@@ -751,13 +760,11 @@ define (count_change total denoms max-coins)
 ;; Reverse list L destructively, creating no new pairs.  May modify the 
 ;; cdrs of the items in list L.
 (define (reverse! L)
-  (define (reverse!-tail L nextpointer)
-    (let* ((next (cdr L)) (nextpointer (cdr next)))
+  (define (reverse!-tail L previous)
+    (let ((next (cdr L)))
       (set-cdr! L (cddr L))
-      (set-cdr! next L)
+      (set-cdr! next previous)
       (if (null? (cdr L))
-	(
-	 
 
 (define L (list 1 2 3 4))
 (define LR (reverse! L))
