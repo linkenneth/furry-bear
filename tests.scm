@@ -748,12 +748,13 @@ filtered_ints
 ;; Reverse list L destructively, creating no new pairs.  May modify the 
 ;; cdrs of the items in list L.
 (define (reverse! L)
-  (cond ((null? (cdr L)) L)
-	
-	(else (reverse! (cdr L)))
-  (set-cdr! L (cdr (cdr L)))	
-)
-
+  (define (reverse!-tail L nextpointer)
+    (let* ((next (cdr L)) (nextpointer (cdr next)))
+      (set-cdr! L (cddr L))
+      (set-cdr! next L)
+      (if (null? (cdr L))
+	(
+	 
 (define L (list 1 2 3 4))
 (define LR (reverse! L))
 LR
