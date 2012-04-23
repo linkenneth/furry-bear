@@ -653,11 +653,7 @@ x
 (case (or (< 2 3) huh?)
   (((= 3 3) (> 2 4)) 'infirst)
   ((#t #t #f) 'inlast))
-<<<<<<< .merge_file_ShRkZI
 ; expect inlast
-=======
-; expect 'inlast
->>>>>>> .merge_file_UUR2DA
 
 (case (= (+ 1 1) 2)
   (((= 3 4) (< 2 6) anycrap) shouldnotgethere)
@@ -676,8 +672,6 @@ x
 (case (+ 2 3)
   (5))
 ; expect #t
-<<<<<<< .merge_file_ShRkZI
-=======
 
 (case 0
   ('here)
@@ -688,11 +682,10 @@ x
   ((60 60 60) 'triangle)
   (else 'uhmm?))
 ; expect triangle
->>>>>>> .merge_file_UUR2DA
 
-(case error
+(case awrpoanuweproabni
   (not getting here at all))
-; expect
+; expect Error
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
