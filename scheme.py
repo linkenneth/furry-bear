@@ -812,5 +812,6 @@ def run(*argv):
         
     input_port = Buffer(tokenize_lines(input_file))
     create_global_environment()
+    # Change to customize prompt string
     read_eval_print(gen_prompt_string())
 
