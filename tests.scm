@@ -514,12 +514,11 @@ x
 ; expect 0
 
 (cond ((= 2 3) 10 100 huh?)
-      (else 1 20 oops)
+      (else 1 20 oops))
 ; expect Error
 
 (cond ((= 2 3) 10 25)
-      ((< 10 2) 100 50)
-; expect
+      ((< 10 2) 100 50))
 
 (cond (#t))
 ; expect #t
@@ -551,7 +550,7 @@ x
 (let ((x (* y r)) (y z) (z (+ x 10))) (list (x y z)))
 ; expect (0 5 13)
 
-(let ((x y z)) (list x y z)
+(let ((x y z)) (list x y z))
 ; expect Error
 
 (let ((x 10) (y (+ x y)) (z z)) (list x y z))
@@ -592,7 +591,7 @@ x
 (let* ((x (* y r)) (y z) (z (+ x 10))) (list (x y z)))
 ; expect (0 5 10)
 
-(let* ((x y z)) (list x y z)
+(let* ((x y z)) (list x y z))
 ; expect Error
 
 (let* ((x 10) (y (+ x y)) (z z)) (list x y z))
@@ -626,53 +625,53 @@ x
 (case (* 2 3)
   ((2 3 5 7) 'prime)
   ((1 4 6 8 9) 'composite))
-;expect composite
+; expect composite
 
 (case (car '(c d))
   ((a e i o u) 'vowel)
   ((w y) 'semivowel)
   (else 'consonant))
-;expect consonant
+; expect consonant
 
 (define x 3) (define y 10)
 (case (car '(+ * /))
   ((+ add) (+ x y))
   ((* mult) (* x y))
   ((/ div) (/ x y)))
-;expect 13
+; expect 13
 
 (case (#t)
   (#f 'false)
   (#t 'true))
-;expect Error
+; expect Error
 
 (case (= 3 3)
   (#f 'false)
   (#t 'true))
-;expect true
+; expect true
 
 (case (or (< 2 3) huh?)
   (((= 3 3) (> 2 4)) 'infirst)
   ((#t #t #f) 'inlast))
-;expect 'inlast
+; expect inlast
 
 (case (= (+ 1 1) 2)
   (((= 3 4) (< 2 6) anycrap) shouldnotgethere)
   ((#t #f) 'right))
-;expect right
+; expect right
 
 (case (/ 2 0)
   ((Error!) '?))
-;expect Error
+; expect Error
 
 (case (+ 2 3)
   (5 'first)
   ((5) 'last))
-;expect first
+; expect first
 
 (case (+ 2 3)
   (5))
-;expect
+; expect #t
 
 
 
@@ -685,8 +684,17 @@ x
 ;; The subsequence of list S for which F outputs a true value (i.e., one
 ;; other than #f), computed destructively
 (define (filter! f s)
-   ; *** YOUR CODE HERE ***
-)
+  (define (filter!-tail filtered f s)
+    (cond ((null? s)
+	   filtered)
+	  ((f (car s))
+	   (append filtered (list (car s)))
+	   (set! s (cdr s))
+	   (filter!-tail filtered f s))
+	  (else
+	   (set! s (cdr s))
+	   (filter!-tail filtered f s))))
+  (filter!-tail () f s))
 
 (define (big x) (> x 5))
 

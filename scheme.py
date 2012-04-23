@@ -362,7 +362,7 @@ class Evaluation:
             try:
                 self.check_form(2, 2, expr = binding)
             except SchemeError:
-                raise SchemeError("badly formed binding in " + binding.car)
+                raise SchemeError("badly formed binding - incorrect binding format")
 
             symbols = Pair(binding.car,symbols)
             vals.append(self.full_eval(binding.cdr.car))
@@ -396,7 +396,7 @@ class Evaluation:
             try:
                 self.check_form(2, 2, expr = binding)
             except SchemeError:
-                raise SchemeError("badly formed binding in " + binding.car)
+                raise SchemeError("badly formed binding - incorrect binding format")
 
             let_frame.define(binding.car,self.full_eval(binding.cdr.car, let_frame))
             bindings = bindings.cdr
@@ -415,6 +415,7 @@ class Evaluation:
         while clauses.pairp():
             clause = clauses.car
             data = clause.car
+            # if empty expr_seq but still matches, then defaults to TRUE
             expr_seq = clause.cdr if not clause.cdr.nullp() else TRUE
 
             # if an else clause
@@ -428,11 +429,13 @@ class Evaluation:
                 self.evaluate_expr_seq_and_set_expr_as_last(expr_seq, TRUE)
                 return
 
-            # otherwise check each datum
-            if data.atomp():
+            # if one piece of data
+            elif data.atomp():
                 if k.eqvp(data):
                     self.evaluate_expr_seq_and_set_expr_as_last(expr_seq, TRUE)
                     return
+
+            # otherwise check each datum
             while data.pairp():
                 datum = data.car
                 if k.eqvp(datum):
