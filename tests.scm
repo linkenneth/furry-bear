@@ -501,19 +501,16 @@ x
 
 (have_money? 1)
 ; expect 100
-3
-(have_money?)
-; expect Error
 
 (cond ((if #t 10 3) => (lambda (x) (if (= x 10) #f #t)))
       (else 100))
 ; expect #f
 
 (cond ((if #t #f what?) => some)
-      (else 'testpassed)
+      (else 'testpassed))
 ; expect testpassed
 
-(cond (else 20 30 405000 0))
+(cond (else 20 30 0))
 ; expect 0
 
 (cond ((= 2 3) 10 100 huh?)
