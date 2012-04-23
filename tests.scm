@@ -723,7 +723,9 @@ x
 	  (else
 	   (set-cdr! l (cddr l))
 	   (filter!-tail result f l))))
-  (cond ((f (car s))
+  (cond ((null? s)
+	 ())
+	((f (car s))
 	 (filter!-tail s f s))
 	(else
 	 (filter! f (cdr s)))))
@@ -741,6 +743,18 @@ filtered_ints
 (eq? filtered_ints ints1)
 ; expect #t
 
+(filter! (lambda (x) (= (modulo x 2) 0)) (list 9 1 2 3 7 6 5 2 4))
+; expect (2 6 2 4)
+
+(filter! (lambda (x) (= (modulo x 2) 1)) (list 9 1 2 3 7 6 5 2 4))
+; expect (9 1 3 7 5)
+
+(filter! (lambda (x) (= (modulo x 2) 3)) (list 9 1 2 3 7 6 5 2 4))
+; expect ()
+
+(filter! (lambda (x) (= (modulo x 2) 0)) '())
+; expect ()
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -750,16 +764,22 @@ filtered_ints
 
 ;; The number of ways to change TOTAL with DENOMS
 ;; At most MAX-COINS total coins can be used.
-(define (count_change total denoms max-coins)
+(define (count-change total denoms max-coins)
   (cond ((or (null? denoms) (< total 0)) 0)
 	((= total 0) 1)
 	((= max-coins 0) 0)
-	(else (+ (count_change (- total (car denoms)) denoms (- max-coins 1))
-		 (count_change total (cdr denoms) max-coins)))))
+	(else (+ (count-change (- total (car denoms)) denoms (- max-coins 1))
+		 (count-change total (cdr denoms) max-coins)))))
 
 (define us_coins '(50 25 10 5 1))
-(count_change 20 us_coins 18)
+(count-change 20 us_coins 18)
 ; expect 8
+
+(count-change 20 '(50 25) 18)
+; expect 0
+
+(count-change 110 '(100 50 25 10 5 1) 7)
+; expect 13
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -778,7 +798,9 @@ filtered_ints
       (if (null? (cdr L))
 	  next
 	  (reverse!-tail L next))))
-  (reverse!-tail L L))
+  (if (or (null? L) (null? (cdr L)))
+      L
+      (reverse!-tail L L)))
 
 (define L (list 1 2 3 4))
 (define LR (reverse! L))
@@ -787,6 +809,15 @@ LR
 
 (eq? L (list-tail LR 3))
 ; expect #t
+
+(reverse! (list 9 1 2 3 7 6 5 2 4))
+; expect (4 2 5 6 7 3 2 1 9)
+
+(reverse! '())
+; expect ()
+
+(reverse! (list 0))
+; expect (0)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -842,3 +873,5 @@ LR
 (list-partitions 7 3 5)
 ; expect ((5 2) (5 1 1) (4 3) (4 2 1) (3 3 1) (3 2 2))
 
+
+;; -- END TEST -- ;;
