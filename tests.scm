@@ -626,54 +626,67 @@ x
 (case (* 2 3)
   ((2 3 5 7) 'prime)
   ((1 4 6 8 9) 'composite))
-;expect composite
+; expect composite
 
 (case (car '(c d))
   ((a e i o u) 'vowel)
   ((w y) 'semivowel)
   (else 'consonant))
-;expect consonant
+; expect consonant
 
 (define x 3) (define y 10)
 (case (car '(+ * /))
   ((+ add) (+ x y))
   ((* mult) (* x y))
   ((/ div) (/ x y)))
-;expect 13
+; expect 13
 
 (case (#t)
   (#f 'false)
   (#t 'true))
-;expect Error
+; expect Error
 
 (case (= 3 3)
   (#f 'false)
   (#t 'true))
-;expect true
+; expect true
 
 (case (or (< 2 3) huh?)
   (((= 3 3) (> 2 4)) 'infirst)
   ((#t #t #f) 'inlast))
-;expect 'inlast
+; expect 'inlast
 
 (case (= (+ 1 1) 2)
   (((= 3 4) (< 2 6) anycrap) shouldnotgethere)
   ((#t #f) 'right))
-;expect right
+; expect right
 
 (case (/ 2 0)
   ((Error!) '?))
-;expect Error
+; expect Error
 
 (case (+ 2 3)
   (5 'first)
   ((5) 'last))
-;expect first
+; expect first
 
 (case (+ 2 3)
   (5))
-;expect
+; expect #t
 
+(case 0
+  ('here)
+  ('there))
+; expect
+
+(case 60
+  ((60 60 60) 'triangle)
+  (else 'uhmm?))
+; expect triangle
+
+(case error
+  (not getting here at all))
+; expect
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -728,7 +741,10 @@ filtered_ints
 ;; Reverse list L destructively, creating no new pairs.  May modify the 
 ;; cdrs of the items in list L.
 (define (reverse! L)
-   ; *** YOUR CODE HERE ***
+  (cond ((null? (cdr L)) L)
+	
+	(else (reverse! (cdr L)))
+  (set-cdr! L (cdr (cdr L)))	
 )
 
 (define L (list 1 2 3 4))
