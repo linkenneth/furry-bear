@@ -415,7 +415,7 @@ class Evaluation:
         while clauses.pairp():
             clause = clauses.car
             data = clause.car
-            expr_seq = clause.cdr
+            expr_seq = clause.cdr if not clause.cdr.nullp() else TRUE
 
             # if an else clause
             if data is self._ELSE_SYM:
@@ -425,16 +425,21 @@ class Evaluation:
                     raise SchemeError("badly formed else clause")
                 if not clauses.cdr.nullp():
                     raise SchemeError("else clause must be the last clause in cond")
-                self.evaluate_expr_seq_and_set_expr_as_last(expr_seq)
+                self.evaluate_expr_seq_and_set_expr_as_last(expr_seq, TRUE)
                 return
 
             # otherwise check each datum
+            if data.atomp():
+                if k.eqvp(data):
+                    self.evaluate_expr_seq_and_set_expr_as_last(expr_seq, TRUE)
+                    return
             while data.pairp():
                 datum = data.car
                 if k.eqvp(datum):
-                    self.evaluate_expr_seq_and_set_expr_as_last(expr_seq)
+                    self.evaluate_expr_seq_and_set_expr_as_last(expr_seq, TRUE)
                     return
                 data = data.cdr
+                
             clauses = clauses.cdr
 
         self.set_value(UNSPEC)
@@ -527,13 +532,13 @@ class Evaluation:
                 distinct.add(item_to_check)
                 formal_list = formal_list.cdr
 
-    def evaluate_expr_seq_and_set_expr_as_last(self, expr_seq):
+    def evaluate_expr_seq_and_set_expr_as_last(self, expr_seq, default=UNSPEC):
         """Utility method for do_cond_form and do_case_form. Evaluates
         all of the expressions within expr_seq, then sets the
         expression of the evaluation as the last of these expressions."""
         # Loops to evaluate possible returns first so it
         # checks for possible SchemeErrors
-        expr = UNSPEC
+        expr = default
         while expr_seq.pairp():
             expr = expr_seq.car
             self.full_eval(expr)
