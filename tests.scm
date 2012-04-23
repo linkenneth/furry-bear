@@ -791,11 +791,25 @@ LR
 ;; Problem 12 ;;
 ;;;;;;;;;;;;;;;;
 
-;; A list of all ways to partition TOTAL, where  each partition must 
+;; A list of all ways to partition TOTAL, where each partition must 
 ;; be at most MAX_VALUE and there are at most MAX_PIECES partitions.
 (define (list-partitions total max-pieces max-value)
-  ; *** YOUR CODE HERE ***
-)
+  (define (list-a-partition total max-pieces max-value partition)
+    (cond ((= total 0)
+	   (list partition))
+	  ((< total 0)
+	   ())
+	  ((<= max-value 0)
+	   ())
+	  ((<= max-pieces 0)  ;; and total != 0
+	   ())
+	  (else
+	   (append (list-a-partition (- total max-value) (- max-pieces 1)
+				     max-value (append partition
+						       (list max-value)))
+		   (list-a-partition total max-pieces (- max-value 1)
+				     partition)))))
+  (list-a-partition total max-pieces max-value ()))
 
 (list-partitions 5 2 4)
 ; expect ((4 1) (3 2))
