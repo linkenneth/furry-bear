@@ -415,7 +415,7 @@ class Evaluation:
         while clauses.pairp():
             clause = clauses.car
             data = clause.car
-            expr_seq = clause.cdr.car
+            expr_seq = clause.cdr
 
             # if an else clause
             if data is self._ELSE_SYM:
@@ -438,7 +438,6 @@ class Evaluation:
             clauses = clauses.cdr
 
         self.set_value(UNSPEC)
-
 
     # Symbols that are used in special forms.
 
