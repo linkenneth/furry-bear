@@ -544,10 +544,10 @@ x
 ;;;;;;;;;;;;;;;;;;;;;
 
 (define x 3) (define y 4) (define z 5) (define r 0)
-(let ((x y) (y z) (z r) (list x y z)))
+(let ((x y) (y z) (z r)) (list x y z))
 ; expect (4 5 0)
 
-(let ((x (* y r)) (y z) (z (+ x 10))) (list (x y z)))
+(let ((x (* y r)) (y z) (z (+ x 10))) (list x y z))
 ; expect (0 5 13)
 
 (let ((x y z)) (list x y z))
@@ -585,10 +585,10 @@ x
 (let* ((x y) (y (* x r)) (z x)) (set! x 1000) (list x y z))
 ; expect (1000 0 4)
 
-(let* ((x y) (y z) (z r) (list x y z)))
+(let* ((x y) (y z) (z r)) (list x y z))
 ; expect (4 5 0)
 
-(let* ((x (* y r)) (y z) (z (+ x 10))) (list (x y z)))
+(let* ((x (* y r)) (y z) (z (+ x 10))) (list x y z))
 ; expect (0 5 10)
 
 (let* ((x y z)) (list x y z))
@@ -796,7 +796,6 @@ LR
 ; expect ((4 1) (3 2))
 (list-partitions 7 3 5)
 ; expect ((5 2) (5 1 1) (4 3) (4 2 1) (3 3 1) (3 2 2))
-
 
 
 ;; -- END TEST -- ;;

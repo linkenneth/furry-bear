@@ -348,7 +348,7 @@ class Evaluation:
 
         # Check that bindings is of the correct form
         try:
-            self.check_form(1, expr = bindings)
+            self.check_form(0, expr = bindings)
         except SchemeError:
             raise SchemeError("badly formed bindings - incorrect number of subforms")
         
@@ -383,7 +383,7 @@ class Evaluation:
 
         # Check that bindings is of the correct form
         try:
-            self.check_form(1, expr = bindings)
+            self.check_form(0, expr = bindings)
         except SchemeError:
             raise SchemeError("badly formed bindings - incorrect number of subforms")
         
