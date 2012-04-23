@@ -705,7 +705,6 @@ _PRIMITIVES = (
     ("-", scm_sub),
     ("*", scm_mul),
     ("/", scm_div),
-    ("sqrt", scm_sqrt),
     ("quotient", scm_quo),
     ("modulo", scm_modulo),
     ("remainder", scm_remainder),
