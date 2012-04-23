@@ -732,7 +732,11 @@ filtered_ints
 ;; The number of ways to change TOTAL with DENOMS
 ;; At most MAX-COINS total coins can be used.
 (define (count_change total denoms max-coins)
-  (define (count_change-tail total denoms max-coins
+  (cond ((or (null? denoms) (< total 0)) 0)
+	((= total 0) 1)
+	((= max-coins 0) 0)
+	(else (+ (count_change (- total (car denoms)) denoms (- max-coins 1))
+		 (count_change total (cdr denoms) max-coins)))))
 
 (define us_coins '(50 25 10 5 1))
 (count_change 20 us_coins 18)
