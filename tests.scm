@@ -739,8 +739,8 @@ filtered_ints
 		 (count_change total (cdr denoms) max-coins)))))
 
 (define us_coins '(50 25 10 5 1))
-(count_change 20 us_coins 18)
-; expect 8
+;;(count_change 20 us_coins 18)
+;; expect 8
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
