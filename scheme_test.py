@@ -14,11 +14,16 @@ to an expected output described in a comment.  For example,
 Differences between printed and expected outputs are printed with line numbers.
 """
 
+"""This file has been modified to be check for arbitrary hexadecimal
+memory locations using regex.
+"""
+
 import io
 import sys
 from ucb import main
 from scheme import call_with_input_source, create_global_environment, \
                    read_eval_print
+import re
 
 def summarize(output, expected_output):
     """Summarize results of running tests."""
@@ -55,7 +60,8 @@ def run_tests(src_file = 'tests.scm'):
             line_number += 1
             line = src.readline()
             if line.lstrip().startswith(EXPECT_STRING):
-                expected = line.split(EXPECT_STRING, 1)[1][1:-1]
+                # Replace hex memory locations with %*HEX_MEMORY*%
+                expected = sub("0x[0-9a-f]+","%*HEX_MEMORYo%",line).split(EXPECT_STRING, 1)[1][1:-1]
                 expected_output.append((expected, line_number))
                 continue
             if not line:
@@ -73,6 +79,6 @@ def run_tests(src_file = 'tests.scm'):
               "after line {0}:\n>>>".format(line_number),
               file=sys.stderr)
         raise
-    output = sys.stdout.getvalue().split('\n')
+    output = sub("0x[0-9a-f]+","%*HEX_MEMORYo%",sys.stdout.getvalue()).split('\n')
     sys.stdout = sys.__stdout__  # Revert stdout
     summarize(output, expected_output)
