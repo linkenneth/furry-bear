@@ -751,18 +751,13 @@ define (count_change total denoms max-coins)
 ;; Reverse list L destructively, creating no new pairs.  May modify the 
 ;; cdrs of the items in list L.
 (define (reverse! L)
-  (define (reverse1 L first sofar)
-    (cond ((null? (cdr L)) L)
-	  ((eqv? sofar first) sofar)
-	  ((= (length L) 1) (reverse! (cdr L) first sofar))
-	  (else (reverse! (cdr L)  (set-cdr! L sofar)))))
-  (reverse1 L (car L) '())
-)
-
-
-  (cond ((null? (cdr L) L)
-	 (else (set-cdr! (last (reverse! (cdr L))) (car L)))))
-)
+  (define (reverse!-tail L nextpointer)
+    (let* ((next (cdr L)) (nextpointer (cdr next)))
+      (set-cdr! L (cddr L))
+      (set-cdr! next L)
+      (if (null? (cdr L))
+	(
+	 
 
 (define L (list 1 2 3 4))
 (define LR (reverse! L))
